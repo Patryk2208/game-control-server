@@ -25,11 +25,11 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 		}
 	}(c)
 
-	session := NewSession()
+	session := NewSession(c)
 	wg := sync.WaitGroup{}
 	wg.Add(2)
-	go session.Reader()
-	go session.Writer()
+	go session.Reader(&wg)
+	go session.Writer(&wg)
 	wg.Wait()
 
 	fmt.Println("Client connection closed")

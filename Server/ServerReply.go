@@ -13,17 +13,16 @@ type Reply struct {
 
 const (
 	ExitReply ReplyType = iota
-	Accepted
-	Rejected
-	GameCommand
+	SystemReply
+	GameReply
 )
 
 type ReplyHandler func(*Session, Reply)
 
 var ReplyHandlerMapper = map[ReplyType]ReplyHandler{
-	ExitReply: ExitReplyHandler,
-	Accepted:  AcceptedHandler,
-	Rejected:  RejectedHandler,
+	ExitReply:   ExitReplyHandler,
+	SystemReply: SystemReplyHandler,
+	GameReply:   GameReplyHandler,
 }
 
 func ExitReplyHandler(session *Session, reply Reply) {
@@ -31,18 +30,14 @@ func ExitReplyHandler(session *Session, reply Reply) {
 	panic(fmt.Errorf("exit reply"))
 }
 
-func AcceptedHandler(session *Session, reply Reply) {
-	fmt.Println("Accepted Reply Handler")
-	err := session.ServerConn.WriteMessage(int(reply.Type), []byte(reply.Message))
+func SystemReplyHandler(session *Session, reply Reply) {
+	fmt.Println("System Reply Handler")
+	err := session.ServerConn.WriteMessage(1, []byte(reply.Message))
 	if err != nil {
 		panic(err)
 	}
 }
 
-func RejectedHandler(session *Session, reply Reply) {
-	fmt.Println("Rejected Reply Handler")
-	err := session.ServerConn.WriteMessage(int(reply.Type), []byte(reply.Message))
-	if err != nil {
-		panic(err)
-	}
+func GameReplyHandler(session *Session, reply Reply) {
+
 }

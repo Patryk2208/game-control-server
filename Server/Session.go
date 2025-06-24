@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
+	"strings"
+	"sync"
 )
 
 type Session struct {
@@ -12,42 +14,55 @@ type Session struct {
 	ReplyQueue chan Reply
 }
 
-func NewSession() *Session {
+func NewSession(c *websocket.Conn) *Session {
 	return &Session{
-		Context: NewNormalContext(),
+		Context:    NewNormalContext(),
+		ServerConn: c,
+		ReplyQueue: make(chan Reply),
 	}
 }
 
-func (s *Session) Reader() {
+func (s *Session) Reader(wg *sync.WaitGroup) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered from ", r)
 		}
 		s.ReplyQueue <- Reply{ExitReply, "Exit"}
 		fmt.Println("Reader Exit")
+		wg.Done()
 		return
 	}()
 	for {
 		msgType, msg, err := s.ServerConn.ReadMessage()
 		if err != nil {
+			fmt.Println("Reader Exit")
 			panic(err)
 		}
-		req := CreateRequest(msgType, string(msg))
+		temp := strings.Split(string(msg), " ")[0]
+		requestType, ok := RequestTypeMapper[temp]
+		if !ok {
+			continue
+		}
+		req := NewRequest(requestType, string(msg))
 		handler, err := s.Context.GetHandler(req)
 		if err != nil {
-			panic(err)
+			continue
 		}
 		handler(s, *req)
 		fmt.Printf("Message type: %d, %s\n", msgType, string(msg))
 	}
 }
 
-func (s *Session) Writer() {
+func (s *Session) Writer(wg *sync.WaitGroup) {
 	defer func() {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered from ", r)
 		}
+		err := s.ServerConn.WriteMessage(1, []byte("T exit OK"))
+		if err != nil {
+		}
 		fmt.Println("Writer Exit")
+		wg.Done()
 		return
 	}()
 	for reply := range s.ReplyQueue {

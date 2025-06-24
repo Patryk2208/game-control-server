@@ -5,6 +5,8 @@ import "fmt"
 func LoginRequestHandler(session *Session, request Request) {
 	//todo login logic
 	fmt.Println("Login Requested")
+	fmt.Println("Login Granted")
+	session.ReplyQueue <- Reply{SystemReply, "T patryk OK"}
 	session.Context = NewAuthenticatedContext()
 }
 
