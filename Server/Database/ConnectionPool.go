@@ -3,9 +3,7 @@ package Database
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"os"
 	"time"
 )
 
@@ -26,11 +24,15 @@ type DBConnectionPool struct {
 	pool *pgxpool.Pool
 }
 
+type AcquiredConnection struct {
+	conn *pgxpool.Conn
+}
+
 func CreateConnectionString(c ConnectionConfig) string {
 	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s", c.Username, c.Password, c.Host, c.Port, c.Database)
 }
 
-func InitConnectionPool(ctx context.Contex, cc ConnectionConfig) (*DBConnectionPool, error) {
+func InitConnectionPool(ctx context.Context, cc ConnectionConfig) (*DBConnectionPool, error) {
 	connString := CreateConnectionString(cc)
 	config, err := pgxpool.ParseConfig(connString)
 	if err != nil {
@@ -55,25 +57,6 @@ func CloseConnectionPool(pool *DBConnectionPool) {
 	pool.pool.Close()
 }
 
-func Connection() {
-	user := "patryk"
-	password := "sql"
-	ip := "172.17.0.2"
-	port := 5432
-	name := "users"
-	connStr :=
-	conn, err := pgx.Connect(context.Background(), connStr)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-	}
-	defer conn.Close(context.Background())
-
-	rows, err := conn.Query(context.Background(), "create table players;")
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to create table: %v\n", err)
-	}
-	defer rows.Close()
-	for rows.Next() {
-		fmt.Println(rows.Scan())
-	}
+func ReleaseConnection(c *AcquiredConnection) {
+	c.conn.Release()
 }

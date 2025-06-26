@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Server/Database"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"strings"
@@ -8,17 +9,20 @@ import (
 )
 
 type Session struct {
-	Context UserConnectionContext
-	//TODO Player Info
+	Context    UserConnectionContext
+	Player     *Database.Player
 	ServerConn *websocket.Conn
 	ReplyQueue chan Reply
+	DbPool     *Database.DBConnectionPool
 }
 
-func NewSession(c *websocket.Conn) *Session {
+func NewSession(c *websocket.Conn, pool *Database.DBConnectionPool) *Session {
 	return &Session{
 		Context:    NewNormalContext(),
 		ServerConn: c,
+		Player:     nil,
 		ReplyQueue: make(chan Reply),
+		DbPool:     pool,
 	}
 }
 

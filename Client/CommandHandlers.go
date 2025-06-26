@@ -45,15 +45,14 @@ func RegisterCommandHandler(session *Session, command Command) {
 	if !ParseRegisterReply(reply) {
 		return
 	}
-	session.Context = NewAuthenticatedContext()
 }
 
 func ParseRegisterReply(reply Reply) bool {
 	if reply.Message[0] == 'T' {
-		fmt.Println("Authentication successful")
+		fmt.Println("Registration successful")
 		return true
 	} else {
-		fmt.Println("Authentication failed")
+		fmt.Println("Registration failed")
 		return false
 	}
 }

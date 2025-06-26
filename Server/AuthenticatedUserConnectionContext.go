@@ -21,7 +21,7 @@ func NewAuthenticatedContext() UserConnectionContext {
 		AuthenticatedContextRequestMapper: map[RequestType]RequestHandler{
 			LogoutRequest:    LogoutRequestHandler,
 			StartGameRequest: StartGameRequestHandler,
-			ExitRequest:      ExitRequestHandler,
+			ExitRequest:      ExitWithLogoutRequestHandler,
 		},
 	}
 }

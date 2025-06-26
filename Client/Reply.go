@@ -35,7 +35,8 @@ var ReplyHandlerMapper = map[ReplyType]ReplyHandler{
 
 func SystemReplyHandler(session *Session, reply Reply) {
 	session.ReplyChannel <- reply
-	if strings.Split(reply.Message, " ")[1] == "exit" {
+	split := strings.Split(reply.Message, " ")
+	if len(split) > 1 && split[1] == "exit" {
 		panic(fmt.Errorf("received exit reply"))
 	}
 }

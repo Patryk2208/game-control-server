@@ -15,7 +15,7 @@ func HashPassword(password string) (string, error) {
 		return "", err
 	}
 
-	hash := argon2.IDKey([]byte(password), salt,3,64*1024,4,32)
+	hash := argon2.IDKey([]byte(password), salt, 3, 64*1024, 4, 32)
 
 	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
 	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
