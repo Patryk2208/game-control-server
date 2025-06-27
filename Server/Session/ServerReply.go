@@ -1,4 +1,4 @@
-package main
+package Session
 
 import (
 	"fmt"
@@ -32,7 +32,7 @@ func ExitReplyHandler(session *Session, reply Reply) {
 
 func SystemReplyHandler(session *Session, reply Reply) {
 	fmt.Println("System Reply Handler")
-	err := session.ServerConn.WriteMessage(1, []byte(reply.Message))
+	err := session.ClientConn.WriteMessage(1, []byte(reply.Message))
 	if err != nil {
 		panic(err)
 	}

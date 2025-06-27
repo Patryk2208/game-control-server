@@ -1,6 +1,8 @@
-package main
+package Session
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type NormalUserConnectionContext struct {
 	NormalContextRequestMapper map[RequestType]RequestHandler

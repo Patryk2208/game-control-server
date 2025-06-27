@@ -1,4 +1,4 @@
-package main
+package Session
 
 type RequestType int
 
@@ -8,6 +8,7 @@ const (
 	LogoutRequest
 	StartGameRequest
 	EndGameRequest
+	StopWaitingRequest
 	ExitRequest
 )
 

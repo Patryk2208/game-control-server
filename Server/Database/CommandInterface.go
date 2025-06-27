@@ -21,7 +21,7 @@ func (pool *DBConnectionPool) TryRegisterUser(username string, password string) 
 	return c.TryAddUser(ctx, username, hash)
 }
 
-func (pool *DBConnectionPool) TryLogin(username string, password string) (bool, *Player, error) {
+func (pool *DBConnectionPool) TryLogin(username string, password string) (bool, *PlayerDB, error) {
 	ctx := context.Background()
 	conn, err := pool.pool.Acquire(ctx)
 	if err != nil {
@@ -33,7 +33,7 @@ func (pool *DBConnectionPool) TryLogin(username string, password string) (bool, 
 	if err != nil {
 		return false, nil, err
 	}
-	success, err := UserAuthentication.VerifyPassword(password, string(player.password_hash))
+	success, err := UserAuthentication.VerifyPassword(password, string(player.Password_hash))
 	if err != nil {
 		return false, nil, err
 	}
@@ -51,7 +51,7 @@ func (pool *DBConnectionPool) TryLogin(username string, password string) (bool, 
 	return true, &player, nil
 }
 
-func (pool *DBConnectionPool) TryLogout(player *Player) (bool, error) {
+func (pool *DBConnectionPool) TryLogout(player *PlayerDB) (bool, error) {
 	ctx := context.Background()
 	conn, err := pool.pool.Acquire(ctx)
 	if err != nil {

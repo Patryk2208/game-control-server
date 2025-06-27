@@ -1,7 +1,9 @@
-package main
+package Session
 
 import (
+	"Server/Matchmaking"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -46,9 +48,29 @@ func LogoutRequestHandler(session *Session, request Request) {
 }
 
 func StartGameRequestHandler(session *Session, request Request) {
-	//todo start game logic
-	fmt.Println("Game Start Requested")
-	session.Context = NewPlayingContext()
+	mrp := CreateMatchRequestParams(request)
+	session.GameManager.AddPlayer(session.Player, mrp)
+	session.ReplyQueue <- Reply{SystemReply, "T"}
+	session.Context = NewWaitingContext()
+}
+
+func CreateMatchRequestParams(request Request) Matchmaking.MatchRequestParams {
+	data := strings.Split(request.Message, " ")
+	if len(data) <= 1 {
+		return Matchmaking.MatchRequestParams{MatchPlayerCount: 1, MatchPairingPreferences: nil}
+	}
+	pairing := make([]string, 0, 20)
+	n, err := strconv.Atoi(data[1])
+	if err != nil {
+		for i := 2; i < len(data); i++ {
+			pairing = append(pairing, data[i])
+		}
+		return Matchmaking.MatchRequestParams{MatchPlayerCount: len(pairing) + 1, MatchPairingPreferences: pairing}
+	}
+	for i := 3; i < len(data); i++ {
+		pairing = append(pairing, data[i])
+	}
+	return Matchmaking.MatchRequestParams{MatchPlayerCount: n, MatchPairingPreferences: pairing}
 }
 
 func EndGameRequestHandler(session *Session, request Request) {
@@ -64,5 +86,25 @@ func ExitRequestHandler(session *Session, request Request) {
 
 func ExitWithLogoutRequestHandler(session *Session, request Request) {
 	LogoutRequestHandler(session, request)
+	ExitRequestHandler(session, request)
+}
+
+func StopWaitingRequestHandler(session *Session, request Request) {
+	success := session.GameManager.RemovePlayer(session.Player)
+	if success {
+		session.ReplyQueue <- Reply{SystemReply, "T"}
+		session.Context = NewAuthenticatedContext()
+	} else {
+		session.ReplyQueue <- Reply{SystemReply, "F"}
+	}
+}
+
+func StopWaitingAndLogoutRequestHandler(session *Session, request Request) {
+	StopWaitingRequestHandler(session, request)
+	LogoutRequestHandler(session, request)
+}
+
+func StopWaitingAndExitRequestHandler(session *Session, request Request) {
+	StopWaitingRequestHandler(session, request)
 	ExitRequestHandler(session, request)
 }

@@ -1,7 +1,8 @@
-package main
+package Session
 
 import (
 	"Server/Database"
+	"Server/Matchmaking"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"strings"
@@ -9,20 +10,22 @@ import (
 )
 
 type Session struct {
-	Context    UserConnectionContext
-	Player     *Database.Player
-	ServerConn *websocket.Conn
-	ReplyQueue chan Reply
-	DbPool     *Database.DBConnectionPool
+	Context     UserConnectionContext
+	Player      *Database.PlayerDB
+	ClientConn  *websocket.Conn
+	ReplyQueue  chan Reply
+	DbPool      *Database.DBConnectionPool
+	GameManager *Matchmaking.GameManager
 }
 
-func NewSession(c *websocket.Conn, pool *Database.DBConnectionPool) *Session {
+func NewSession(c *websocket.Conn, pool *Database.DBConnectionPool, gm *Matchmaking.GameManager) *Session {
 	return &Session{
-		Context:    NewNormalContext(),
-		ServerConn: c,
-		Player:     nil,
-		ReplyQueue: make(chan Reply),
-		DbPool:     pool,
+		Context:     NewNormalContext(),
+		ClientConn:  c,
+		Player:      nil,
+		ReplyQueue:  make(chan Reply),
+		DbPool:      pool,
+		GameManager: gm,
 	}
 }
 
@@ -31,13 +34,13 @@ func (s *Session) Reader(wg *sync.WaitGroup) {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered from ", r)
 		}
-		s.ReplyQueue <- Reply{ExitReply, "Exit"}
+		s.ReplyQueue <- Reply{Type: ExitReply, Message: "Exit"}
 		fmt.Println("Reader Exit")
 		wg.Done()
 		return
 	}()
 	for {
-		msgType, msg, err := s.ServerConn.ReadMessage()
+		msgType, msg, err := s.ClientConn.ReadMessage()
 		if err != nil {
 			fmt.Println("Reader Exit")
 			panic(err)
@@ -62,7 +65,7 @@ func (s *Session) Writer(wg *sync.WaitGroup) {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered from ", r)
 		}
-		err := s.ServerConn.WriteMessage(1, []byte("T exit OK"))
+		err := s.ClientConn.WriteMessage(1, []byte("T exit OK"))
 		if err != nil {
 		}
 		fmt.Println("Writer Exit")

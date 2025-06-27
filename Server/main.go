@@ -2,6 +2,8 @@ package main
 
 import (
 	"Server/Database"
+	"Server/Matchmaking"
+	"Server/Session"
 	"context"
 	"fmt"
 	"github.com/gorilla/websocket"
@@ -19,6 +21,7 @@ var upgrader = websocket.Upgrader{
 }
 
 var globalConnectionPool *Database.DBConnectionPool = nil
+var matchmakingGameManager = Matchmaking.NewGameManager()
 
 func handleConnection(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -32,7 +35,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 		}
 	}(c)
 
-	session := NewSession(c, globalConnectionPool)
+	session := Session.NewSession(c, globalConnectionPool, matchmakingGameManager)
 	wg := sync.WaitGroup{}
 	wg.Add(2)
 	go session.Reader(&wg)
