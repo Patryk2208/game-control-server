@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  namespace: game
   labels:
     app: game
 spec:
@@ -18,6 +19,7 @@ spec:
       containers:
         - name: postgres
           image: postgres:15
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
           env:
@@ -34,15 +36,18 @@ spec:
                   name: postgres-basic-auth
                   key: password
           volumeMounts:
-            - name: persistentTestPostgres
+            - name: test-postgres-claim
               mountPath: /var/lib/postgresql/data
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "0.1"
   volumeClaimTemplates:
     - metadata:
-        name: persistentTestPostgres
+        name: test-postgres-claim
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: "ssd"
+        storageClassName: standard
         resources:
           requests:
-            storage: 100M
-      
+            storage: 1Gi

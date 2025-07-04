@@ -11,7 +11,7 @@ func main() {
 	session := NewSession()
 	defer session.Close()
 
-	c, _, err := websocket.DefaultDialer.Dial("ws://localhost:8080/ws", nil)
+	c, _, err := websocket.DefaultDialer.Dial("ws://10.111.231.112:8080/ws", nil)
 	if err != nil {
 		log.Fatal("Dial error:", err)
 	}
