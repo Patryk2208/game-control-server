@@ -9,7 +9,7 @@ import (
 
 type ConnectionConfig struct {
 	Host     string
-	Port     int
+	Port     string
 	Username string
 	Password string
 	Database string
@@ -29,7 +29,7 @@ type AcquiredConnection struct {
 }
 
 func CreateConnectionString(c ConnectionConfig) string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%d/%s", c.Username, c.Password, c.Host, c.Port, c.Database)
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s", c.Username, c.Password, c.Host, c.Port, c.Database)
 }
 
 func InitConnectionPool(ctx context.Context, cc ConnectionConfig) (*DBConnectionPool, error) {

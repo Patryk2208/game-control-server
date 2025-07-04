@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/websocket"
 	"math"
 	"net/http"
+	"os"
 	"runtime"
 	"sync"
 	"time"
@@ -55,11 +56,11 @@ func basicListen() {
 
 func main() {
 	config := Database.ConnectionConfig{
-		Host:            "172.17.0.2",
-		Port:            5432,
-		Database:        "users",
-		Username:        "patryk",
-		Password:        "sql",
+		Host:            os.Getenv("DB_HOST"),
+		Port:            os.Getenv("DB_PORT"),
+		Database:        os.Getenv("DB_NAME"),
+		Username:        os.Getenv("DB_USER"),
+		Password:        os.Getenv("DB_PASSWORD"),
 		MaxConnections:  int32(4 * runtime.NumCPU()),
 		MinConnections:  int32(math.Round(0.2 * 4 * float64(runtime.NumCPU()))),
 		MaxConnIdleTime: 5 * time.Minute,

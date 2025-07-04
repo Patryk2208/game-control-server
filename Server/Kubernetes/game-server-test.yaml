@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: game-server
+  namespace: game
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: game-server
+  template:
+    metadata:
+      labels:
+        app: game-server
+        game-id: ""
+    spec:
+      containers:
+        - name: game-server
+          image: rpg-game-server:local
+          ports:
+            - containerPort: 5555
+          env:
+            - name: GAME_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['game-id']

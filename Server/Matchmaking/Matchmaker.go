@@ -11,7 +11,7 @@ type MatchRequestParams struct {
 }
 
 func (gm *GameManager) AddPlayer(player *Database.PlayerDB, mrp MatchRequestParams) {
-	gm.Mutex.Lock()
+	gm.MatchingMutex.Lock()
 	success := false
 	successInd := -1
 	for i := 0; i < len(gm.WaitingMatches); i++ {
@@ -33,19 +33,22 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, mrp MatchRequestPara
 	if !success {
 		arr := make([]*Database.PlayerDB, 0, 20)
 		arr = append(arr, player)
-		gm.WaitingMatches = append(gm.WaitingMatches, Match{mrp.MatchPlayerCount, arr})
-		gm.Mutex.Unlock()
+		gm.WaitingMatches = append(gm.WaitingMatches, &Match{mrp.MatchPlayerCount, arr})
+		gm.MatchingMutex.Unlock()
 		return
 	}
 	gm.WaitingMatches[successInd].Players = append(gm.WaitingMatches[successInd].Players, player)
 	if len(gm.WaitingMatches[successInd].Players) == gm.WaitingMatches[successInd].Capacity {
-		//todo start a game in a separate goroutine
+		gm.MatchingMutex.Unlock()
+		go gm.StartGame(gm.WaitingMatches[successInd])
+	} else {
+		gm.MatchingMutex.Unlock()
+		return
 	}
-	gm.Mutex.Unlock()
 }
 
 func (gm *GameManager) RemovePlayer(player *Database.PlayerDB) bool {
-	gm.Mutex.Lock()
+	gm.MatchingMutex.Lock()
 	for i := 0; i < len(gm.WaitingMatches); i++ {
 		ind := slices.Index(gm.WaitingMatches[i].Players, player)
 		if ind == -1 {
@@ -55,13 +58,9 @@ func (gm *GameManager) RemovePlayer(player *Database.PlayerDB) bool {
 		if len(gm.WaitingMatches[i].Players) == 0 {
 			gm.WaitingMatches = slices.Delete(gm.WaitingMatches, i, i+1)
 		}
-		gm.Mutex.Unlock()
+		gm.MatchingMutex.Unlock()
 		return true
 	}
-	gm.Mutex.Unlock()
+	gm.MatchingMutex.Unlock()
 	return false
-}
-
-func (gm *GameManager) StartGame() {
-	//todo
 }

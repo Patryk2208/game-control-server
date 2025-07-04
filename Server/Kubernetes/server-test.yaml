@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: server-test
+  labels:
+    app: server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: server-pod
+  template:
+    metadata:
+      name: server-pod
+      labels:
+        app: server-pod
+    spec:
+      containers:
+        - name: server-container
+          image: test-game-server:local
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          env:
+            - name: DB_HOST
+              value: "postgres-service.game.svc.cluster.local"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: "users"
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-basic-auth
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-basic-auth
+                  key: password
+      restartPolicy: Always
+      
