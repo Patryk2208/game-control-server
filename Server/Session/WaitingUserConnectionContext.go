@@ -1,14 +1,15 @@
 package Session
 
 import (
+	"Server/Communication"
 	"fmt"
 )
 
 type WaitingUserConnectionContext struct {
-	WaitingContextRequestMapper map[RequestType]RequestHandler
+	WaitingContextRequestMapper map[Communication.RequestType]RequestHandler
 }
 
-func (context WaitingUserConnectionContext) GetHandler(request *Request) (RequestHandler, error) {
+func (context WaitingUserConnectionContext) GetHandler(request *Communication.Request) (RequestHandler, error) {
 	handler, exists := context.WaitingContextRequestMapper[request.Type]
 	if !exists {
 		return nil, fmt.Errorf("no handler found for request type %d", request.Type)
@@ -18,7 +19,7 @@ func (context WaitingUserConnectionContext) GetHandler(request *Request) (Reques
 
 func NewWaitingContext() UserConnectionContext {
 	return PlayingUserConnectionContext{
-		PlayingContextRequestMapper: map[RequestType]RequestHandler{
+		PlayingContextRequestMapper: map[Communication.RequestType]RequestHandler{
 			StopWaitingRequest: StopWaitingRequestHandler,
 			LogoutRequest:      StopWaitingAndLogoutRequestHandler,
 			ExitRequest:        StopWaitingAndExitRequestHandler,

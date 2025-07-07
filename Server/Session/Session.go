@@ -1,6 +1,7 @@
 package Session
 
 import (
+	"Server/Communication"
 	"Server/Database"
 	"Server/Matchmaking"
 	"fmt"
@@ -13,7 +14,7 @@ type Session struct {
 	Context     UserConnectionContext
 	Player      *Database.PlayerDB
 	ClientConn  *websocket.Conn
-	ReplyQueue  chan Reply
+	ReplyQueue  chan Communication.Reply
 	DbPool      *Database.DBConnectionPool
 	GameManager *Matchmaking.GameManager
 }
@@ -23,7 +24,7 @@ func NewSession(c *websocket.Conn, pool *Database.DBConnectionPool, gm *Matchmak
 		Context:     NewNormalContext(),
 		ClientConn:  c,
 		Player:      nil,
-		ReplyQueue:  make(chan Reply),
+		ReplyQueue:  make(chan Communication.Reply),
 		DbPool:      pool,
 		GameManager: gm,
 	}
@@ -34,7 +35,7 @@ func (s *Session) Reader(wg *sync.WaitGroup) {
 		if r := recover(); r != nil {
 			fmt.Println("Recovered from ", r)
 		}
-		s.ReplyQueue <- Reply{Type: ExitReply, Message: "Exit"}
+		s.ReplyQueue <- Communication.Reply{Type: Communication.ExitReply, Message: "Exit"}
 		fmt.Println("Reader Exit")
 		wg.Done()
 		return

@@ -1,8 +1,10 @@
 package Matchmaking
 
 import (
+	"Server/Communication"
 	"Server/Database"
 	"context"
+	"fmt"
 	"slices"
 )
 
@@ -16,7 +18,6 @@ func (gm *GameManager) RunGameServer(readyGame *Match) {
 	gm.WaitingMatches = slices.Delete(gm.WaitingMatches, ind, ind+1)
 	gm.MatchingMutex.Unlock()
 
-	//todo maintain the control connection, send its ip to all players, maintain container
 	ctx := context.Background()
 	ip, port, err := gm.CreateGameServer(ctx)
 	if err != nil {
@@ -34,17 +35,24 @@ func (gm *GameManager) RunGameServer(readyGame *Match) {
 		},
 	}
 	gm.ActiveMutex.Lock()
-	//todo run a game container add it to active games
-	i := len(gm.ActiveGames)
 	gm.ActiveGames = append(gm.ActiveGames, gi)
-	j := len(gm.ActiveGames)
 	gm.ActiveMutex.Unlock()
 
-	//todo send to client
-	gm.WatchContainerState(ctx, gm.ContainerInfo.StdGSTemplate)
+	universalReply := Communication.Reply{
+		Type:    Communication.GameReply,
+		Message: fmt.Sprintf("G %s %d", ip, port),
+	}
+	for _, player := range readyGame.Players {
+		player.ReplyChannel <- universalReply
+	}
 
+	gm.WatchContainerState(ctx, gm.ContainerInfo.StdGSTemplate)
 	gm.ActiveMutex.Lock()
 	//todo move to archived in db
-	gm.ActiveGames = slices.Delete(gm.ActiveGames, i, j)
+	ind = slices.Index(gm.ActiveGames, gi)
+	if ind != -1 {
+		panic("game already closed")
+	}
+	gm.ActiveGames = slices.Delete(gm.ActiveGames, ind, ind+1)
 	gm.ActiveMutex.Unlock()
 }

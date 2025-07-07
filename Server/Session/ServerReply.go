@@ -1,36 +1,24 @@
 package Session
 
 import (
+	"Server/Communication"
 	"fmt"
 )
 
-type ReplyType int
+type ReplyHandler func(*Session, Communication.Reply)
 
-type Reply struct {
-	Type    ReplyType
-	Message string
+var ReplyHandlerMapper = map[Communication.ReplyType]ReplyHandler{
+	Communication.ExitReply:   ExitReplyHandler,
+	Communication.SystemReply: SystemReplyHandler,
+	Communication.GameReply:   GameReplyHandler,
 }
 
-const (
-	ExitReply ReplyType = iota
-	SystemReply
-	GameReply
-)
-
-type ReplyHandler func(*Session, Reply)
-
-var ReplyHandlerMapper = map[ReplyType]ReplyHandler{
-	ExitReply:   ExitReplyHandler,
-	SystemReply: SystemReplyHandler,
-	GameReply:   GameReplyHandler,
-}
-
-func ExitReplyHandler(session *Session, reply Reply) {
+func ExitReplyHandler(session *Session, reply Communication.Reply) {
 	fmt.Println("Exit Reply Handler")
 	panic(fmt.Errorf("exit reply"))
 }
 
-func SystemReplyHandler(session *Session, reply Reply) {
+func SystemReplyHandler(session *Session, reply Communication.Reply) {
 	fmt.Println("System Reply Handler")
 	err := session.ClientConn.WriteMessage(1, []byte(reply.Message))
 	if err != nil {
@@ -38,6 +26,6 @@ func SystemReplyHandler(session *Session, reply Reply) {
 	}
 }
 
-func GameReplyHandler(session *Session, reply Reply) {
+func GameReplyHandler(session *Session, reply Communication.Reply) {
 
 }

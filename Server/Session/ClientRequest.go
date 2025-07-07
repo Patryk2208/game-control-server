@@ -1,9 +1,9 @@
 package Session
 
-type RequestType int
+import "Server/Communication"
 
 const (
-	LoginRequest RequestType = iota
+	LoginRequest Communication.RequestType = iota
 	RegisterRequest
 	LogoutRequest
 	StartGameRequest
@@ -12,7 +12,7 @@ const (
 	ExitRequest
 )
 
-var RequestTypeMapper = map[string]RequestType{
+var RequestTypeMapper = map[string]Communication.RequestType{
 	"login":    LoginRequest,
 	"register": RegisterRequest,
 	"logout":   LogoutRequest,
@@ -21,13 +21,8 @@ var RequestTypeMapper = map[string]RequestType{
 	"exit":     ExitRequest,
 }
 
-type Request struct {
-	Type    RequestType
-	Message string
-}
+type RequestHandler func(*Session, Communication.Request) //Todo Decision
 
-type RequestHandler func(*Session, Request) //Todo Decision
-
-func NewRequest(requestType RequestType, message string) *Request {
-	return &Request{requestType, message}
+func NewRequest(requestType Communication.RequestType, message string) *Communication.Request {
+	return &Communication.Request{Type: requestType, Message: message}
 }

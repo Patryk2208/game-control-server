@@ -1,14 +1,15 @@
 package Session
 
 import (
+	"Server/Communication"
 	"fmt"
 )
 
 type PlayingUserConnectionContext struct {
-	PlayingContextRequestMapper map[RequestType]RequestHandler
+	PlayingContextRequestMapper map[Communication.RequestType]RequestHandler
 }
 
-func (context PlayingUserConnectionContext) GetHandler(request *Request) (RequestHandler, error) {
+func (context PlayingUserConnectionContext) GetHandler(request *Communication.Request) (RequestHandler, error) {
 	handler, exists := context.PlayingContextRequestMapper[request.Type]
 	if !exists {
 		return nil, fmt.Errorf("no handler found for request type %s", request.Type)
@@ -18,7 +19,7 @@ func (context PlayingUserConnectionContext) GetHandler(request *Request) (Reques
 
 func NewPlayingContext() UserConnectionContext {
 	return PlayingUserConnectionContext{
-		PlayingContextRequestMapper: map[RequestType]RequestHandler{
+		PlayingContextRequestMapper: map[Communication.RequestType]RequestHandler{
 			EndGameRequest: EndGameRequestHandler,
 		},
 	}

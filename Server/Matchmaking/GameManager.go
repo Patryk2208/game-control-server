@@ -1,6 +1,7 @@
 package Matchmaking
 
 import (
+	"Server/Communication"
 	"Server/Database"
 	agonesv1 "agones.dev/agones/pkg/apis/agones/v1"
 	"github.com/gorilla/websocket"
@@ -22,9 +23,14 @@ type GameInstance struct {
 	GameAddress       GameContainerAddress
 }
 
+type MatchPlayer struct {
+	Player       *Database.PlayerDB
+	ReplyChannel chan Communication.Reply
+}
+
 type Match struct {
 	Capacity int
-	Players  []*Database.PlayerDB
+	Players  []*MatchPlayer
 }
 
 type GameManager struct {

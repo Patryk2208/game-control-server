@@ -1,5 +1,7 @@
 package Session
 
+import "Server/Communication"
+
 /*type Context int
 
 const (
@@ -9,5 +11,5 @@ const (
 )*/
 
 type UserConnectionContext interface {
-	GetHandler(request *Request) (RequestHandler, error)
+	GetHandler(request *Communication.Request) (RequestHandler, error)
 }

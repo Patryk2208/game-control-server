@@ -22,7 +22,7 @@ var upgrader = websocket.Upgrader{
 }
 
 var globalConnectionPool *Database.DBConnectionPool = nil
-var matchmakingGameManager = Matchmaking.NewGameManager()
+var matchmakingGameManager *Matchmaking.GameManager = nil
 
 func handleConnection(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -72,5 +72,8 @@ func main() {
 		panic(err)
 	}
 	defer Database.CloseConnectionPool(globalConnectionPool)
+
+	matchmakingGameManager = Matchmaking.NewGameManager(globalConnectionPool)
+
 	basicListen()
 }
