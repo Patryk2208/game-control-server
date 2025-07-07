@@ -4,8 +4,6 @@ import (
 	"fmt"
 )
 
-//todo
-
 func LoginCommandHandler(session *Session, command Command) {
 	message := command.Name
 	for i := 0; i < len(command.Args); i++ {

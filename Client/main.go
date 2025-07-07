@@ -11,7 +11,7 @@ func main() {
 	session := NewSession()
 	defer session.Close()
 
-	c, _, err := websocket.DefaultDialer.Dial("ws://10.111.231.112:8080/ws", nil)
+	c, _, err := websocket.DefaultDialer.Dial("ws://10.111.231.112:32521/ws", nil)
 	if err != nil {
 		log.Fatal("Dial error:", err)
 	}
@@ -24,7 +24,7 @@ func main() {
 
 	fmt.Println("Game CLI Session Started (v1.0)")
 	fmt.Println("Type 'help' for available commands")
-	session.StartREPL()
+	session.Start()
 
 	wg.Wait()
 }
