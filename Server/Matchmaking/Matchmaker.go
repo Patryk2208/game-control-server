@@ -40,7 +40,7 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, mrp MatchRequestPara
 	gm.WaitingMatches[successInd].Players = append(gm.WaitingMatches[successInd].Players, player)
 	if len(gm.WaitingMatches[successInd].Players) == gm.WaitingMatches[successInd].Capacity {
 		gm.MatchingMutex.Unlock()
-		go gm.StartGame(gm.WaitingMatches[successInd])
+		go gm.RunGameServer(gm.WaitingMatches[successInd])
 	} else {
 		gm.MatchingMutex.Unlock()
 		return

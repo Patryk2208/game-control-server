@@ -1,0 +1,31 @@
+apiVersion: agones.dev/v1
+kind: Fleet
+metadata:
+  name: game-server-fleet
+  namespace: game
+spec:
+  replicas: 5
+  template:
+    spec:
+      ports:
+        - name: game
+          containerPort: 5555
+          portPolicy: Dynamic
+          protocol: TCP
+        - name: agones-sdk
+          containerPort: 9357
+          protocol: TCP
+      template:
+        spec:
+          containers:
+            - name: game-server
+              image: rpg-game-server:local
+              resources:
+                limits:
+                  cpu: "4"
+                  memory: "1Gi"
+              env:
+                - name: SERVER_PORT
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['agones.dev/containerPort-game']
