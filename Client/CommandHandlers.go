@@ -50,7 +50,7 @@ func ParseRegisterReply(reply Reply) bool {
 		fmt.Println("Registration successful")
 		return true
 	} else {
-		fmt.Println("Registration failed")
+		fmt.Println("Registration failed received F")
 		return false
 	}
 }

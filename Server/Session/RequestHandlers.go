@@ -33,6 +33,7 @@ func RegisterRequestHandler(session *Session, request Communication.Request) {
 	success, err := session.DbPool.TryRegisterUser(data[1], data[2])
 	if err != nil || !success {
 		session.ReplyQueue <- Communication.Reply{Type: Communication.SystemReply, Message: "F"}
+		fmt.Println(err.Error())
 		return
 	}
 	session.ReplyQueue <- Communication.Reply{Type: Communication.SystemReply, Message: "T"}

@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: server-test
+  name: server-pod
   namespace: game
   labels:
     app: server
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: server-pod

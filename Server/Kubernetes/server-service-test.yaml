@@ -5,10 +5,10 @@ metadata:
   namespace: game
 spec:
   selector:
-    app: server
+    app: server-pod
   ports:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-  type: NodePort
+  type: LoadBalancer
   
