@@ -19,8 +19,6 @@ func (context PlayingUserConnectionContext) GetHandler(request *Communication.Re
 
 func NewPlayingContext() UserConnectionContext {
 	return PlayingUserConnectionContext{
-		PlayingContextRequestMapper: map[Communication.RequestType]RequestHandler{
-			EndGameRequest: EndGameRequestHandler,
-		},
+		PlayingContextRequestMapper: map[Communication.RequestType]RequestHandler{},
 	}
 }

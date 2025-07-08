@@ -16,6 +16,7 @@ spec:
       labels:
         app: server-pod
     spec:
+      serviceAccountName: matchmaker-service-account
       containers:
         - name: server-container
           image: test-game-server:local

@@ -15,6 +15,7 @@ type Session struct {
 	Player      *Database.PlayerDB
 	ClientConn  *websocket.Conn
 	ReplyQueue  chan Communication.Reply
+	ReplyMutex  sync.Mutex
 	DbPool      *Database.DBConnectionPool
 	GameManager *Matchmaking.GameManager
 }

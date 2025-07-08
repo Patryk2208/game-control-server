@@ -50,9 +50,12 @@ func LogoutRequestHandler(session *Session, request Communication.Request) {
 }
 
 func StartGameRequestHandler(session *Session, request Communication.Request) {
+	fmt.Println("StartGameRequestHandler")
 	mrp := CreateMatchRequestParams(request)
-	session.GameManager.AddPlayer(session.Player, session.ReplyQueue, mrp)
+	session.ReplyMutex.Lock()
+	session.GameManager.AddPlayer(session.Player, session.ReplyQueue, session.ReplyMutex, mrp)
 	session.ReplyQueue <- Communication.Reply{Type: Communication.SystemReply, Message: "T"}
+	session.ReplyMutex.Unlock()
 	session.Context = NewWaitingContext()
 }
 
@@ -73,12 +76,6 @@ func CreateMatchRequestParams(request Communication.Request) Matchmaking.MatchRe
 		pairing = append(pairing, data[i])
 	}
 	return Matchmaking.MatchRequestParams{MatchPlayerCount: n, MatchPairingPreferences: pairing}
-}
-
-func EndGameRequestHandler(session *Session, request Communication.Request) {
-	//todo end game logic
-	fmt.Println("Game End Requested")
-	session.Context = NewAuthenticatedContext()
 }
 
 func ExitRequestHandler(session *Session, request Communication.Request) {
@@ -104,9 +101,10 @@ func StopWaitingRequestHandler(session *Session, request Communication.Request) 
 func StopWaitingAndLogoutRequestHandler(session *Session, request Communication.Request) {
 	StopWaitingRequestHandler(session, request)
 	LogoutRequestHandler(session, request)
+	session.Context = NewNormalContext()
 }
 
 func StopWaitingAndExitRequestHandler(session *Session, request Communication.Request) {
 	StopWaitingRequestHandler(session, request)
-	ExitRequestHandler(session, request)
+	ExitWithLogoutRequestHandler(session, request)
 }

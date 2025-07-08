@@ -7,7 +7,6 @@ const (
 	RegisterRequest
 	LogoutRequest
 	StartGameRequest
-	EndGameRequest
 	StopWaitingRequest
 	ExitRequest
 )
@@ -17,11 +16,11 @@ var RequestTypeMapper = map[string]Communication.RequestType{
 	"register": RegisterRequest,
 	"logout":   LogoutRequest,
 	"start":    StartGameRequest,
-	"end":      EndGameRequest,
+	"stop":     StopWaitingRequest,
 	"exit":     ExitRequest,
 }
 
-type RequestHandler func(*Session, Communication.Request) //Todo Decision
+type RequestHandler func(*Session, Communication.Request)
 
 func NewRequest(requestType Communication.RequestType, message string) *Communication.Request {
 	return &Communication.Request{Type: requestType, Message: message}

@@ -3,11 +3,13 @@ package Matchmaking
 import (
 	"Server/Communication"
 	"Server/Database"
-	agonesv1 "agones.dev/agones/pkg/apis/agones/v1"
+	allocationv1 "agones.dev/agones/pkg/apis/allocation/v1"
+	"agones.dev/agones/pkg/client/clientset/versioned"
+	"fmt"
 	"github.com/gorilla/websocket"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"sync"
 )
 
@@ -26,6 +28,7 @@ type GameInstance struct {
 type MatchPlayer struct {
 	Player       *Database.PlayerDB
 	ReplyChannel chan Communication.Reply
+	ReplyMutex   sync.Mutex
 }
 
 type Match struct {
@@ -34,64 +37,55 @@ type Match struct {
 }
 
 type GameManager struct {
-	MatchingMutex  *sync.Mutex
-	ActiveMutex    *sync.Mutex
+	MatchingMutex  sync.Mutex
+	ActiveMutex    sync.Mutex
 	WaitingMatches []*Match
 	ActiveGames    []*GameInstance
 	DbPool         *Database.DBConnectionPool
 	ContainerInfo  ContainerizationInfo
 }
 
-func NewGameManager(dbp *Database.DBConnectionPool) *GameManager {
+func NewGameManager(dbp *Database.DBConnectionPool) (*GameManager, error) {
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create config: %w", err)
+	}
+
+	agonesClient, err := versioned.NewForConfig(config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Agones client: %w", err)
+	}
+
+	kubeClient, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
+	}
 	const maxMatchCount = 10000
 	return &GameManager{
-		MatchingMutex: new(sync.Mutex),
-		ActiveMutex:   new(sync.Mutex),
+		MatchingMutex: sync.Mutex{},
+		ActiveMutex:   sync.Mutex{},
 		DbPool:        dbp,
 		ContainerInfo: ContainerizationInfo{
-			StdGSTemplate: &agonesv1.GameServer{
+			AgonesClient:     agonesClient,
+			KubernetesClient: kubeClient,
+			Namespace:        "game",
+			AllocationTemplate: &allocationv1.GameServerAllocation{
 				ObjectMeta: metav1.ObjectMeta{
-					Namespace: "game",
+					GenerateName: "alloc-",
+					Namespace:    "game",
 				},
-				Spec: agonesv1.GameServerSpec{
-					Ports: []agonesv1.GameServerPort{{
-						Name:          "game",
-						PortPolicy:    agonesv1.Dynamic,
-						ContainerPort: 5555,
-						Protocol:      corev1.ProtocolTCP,
-					},
-						{
-							Name:          "agones-sdk",
-							ContainerPort: 9357,
-							Protocol:      corev1.ProtocolTCP,
-						}},
-					Template: corev1.PodTemplateSpec{
-						Spec: corev1.PodSpec{
-							Containers: []corev1.Container{{
-								Name:  "game-server",
-								Image: "rpg-game-server:local",
-								Resources: corev1.ResourceRequirements{
-									Limits: corev1.ResourceList{
-										corev1.ResourceCPU:    resource.MustParse("3000"),
-										corev1.ResourceMemory: resource.MustParse("1Gi"),
-									},
-								},
-								Env: []corev1.EnvVar{{
-									Name: "SERVER_PORT",
-									ValueFrom: &corev1.EnvVarSource{
-										FieldRef: &corev1.ObjectFieldSelector{
-											FieldPath: "metadata.annotations['agones.dev/containerPort-game']",
-										},
-									},
-								}},
-							}},
+				Spec: allocationv1.GameServerAllocationSpec{
+					Selectors: []allocationv1.GameServerSelector{{
+						LabelSelector: metav1.LabelSelector{
+							MatchLabels: map[string]string{
+								"agones.dev/fleet": "game-server-fleet",
+							},
 						},
-					},
+					}},
 				},
 			},
-			Namespace: "game",
 		},
 		WaitingMatches: make([]*Match, 0, maxMatchCount),
 		ActiveGames:    make([]*GameInstance, 0, maxMatchCount),
-	}
+	}, nil
 }

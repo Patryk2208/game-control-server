@@ -73,7 +73,10 @@ func main() {
 	}
 	defer Database.CloseConnectionPool(globalConnectionPool)
 
-	matchmakingGameManager = Matchmaking.NewGameManager(globalConnectionPool)
+	matchmakingGameManager, err = Matchmaking.NewGameManager(globalConnectionPool)
+	if err != nil {
+		panic(err)
+	}
 
 	basicListen()
 }

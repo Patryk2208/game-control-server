@@ -9,9 +9,11 @@ import (
 )
 
 func (gm *GameManager) RunGameServer(readyGame *Match) {
+	fmt.Println("tries to run game server")
 	gm.MatchingMutex.Lock()
 	ind := slices.Index(gm.WaitingMatches, readyGame)
 	if ind == -1 || len(readyGame.Players) != readyGame.Capacity {
+		fmt.Println("not enough players or game server already started")
 		gm.MatchingMutex.Unlock()
 		return
 	}
@@ -19,9 +21,11 @@ func (gm *GameManager) RunGameServer(readyGame *Match) {
 	gm.MatchingMutex.Unlock()
 
 	ctx := context.Background()
-	ip, port, err := gm.CreateGameServer(ctx)
+	ip, port, err := gm.AllocateGameServer(ctx)
+	fmt.Println("game server created")
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 	//todo add game instance to db
 
@@ -43,16 +47,22 @@ func (gm *GameManager) RunGameServer(readyGame *Match) {
 		Message: fmt.Sprintf("G %s %d", ip, port),
 	}
 	for _, player := range readyGame.Players {
+		player.ReplyMutex.Lock()
 		player.ReplyChannel <- universalReply
+		player.ReplyMutex.Unlock()
 	}
+	fmt.Println("game address sent to each player")
 
-	gm.WatchContainerState(ctx, gm.ContainerInfo.StdGSTemplate)
+	gm.WatchContainerState(ctx)
+	fmt.Println("game server ended")
 	gm.ActiveMutex.Lock()
 	//todo move to archived in db
 	ind = slices.Index(gm.ActiveGames, gi)
 	if ind != -1 {
-		panic("game already closed")
+		fmt.Println("game already closed")
+		return
 	}
 	gm.ActiveGames = slices.Delete(gm.ActiveGames, ind, ind+1)
 	gm.ActiveMutex.Unlock()
+	fmt.Println("game instance completed")
 }

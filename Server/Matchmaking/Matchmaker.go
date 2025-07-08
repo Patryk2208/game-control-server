@@ -3,7 +3,9 @@ package Matchmaking
 import (
 	"Server/Communication"
 	"Server/Database"
+	"fmt"
 	"slices"
+	"sync"
 )
 
 type MatchRequestParams struct {
@@ -11,8 +13,9 @@ type MatchRequestParams struct {
 	MatchPairingPreferences []string
 }
 
-func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel chan Communication.Reply, mrp MatchRequestParams) {
-	mp := &MatchPlayer{Player: player, ReplyChannel: replyChannel}
+func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel chan Communication.Reply, replyMutex sync.Mutex, mrp MatchRequestParams) {
+	fmt.Println("Matchmaking start")
+	mp := &MatchPlayer{Player: player, ReplyChannel: replyChannel, ReplyMutex: replyMutex}
 	gm.MatchingMutex.Lock()
 	success := false
 	successInd := -1
@@ -33,10 +36,15 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel chan Co
 		}
 	}
 	if !success {
+		fmt.Println("Matchmaking didn't find a match, starts a new one")
 		arr := make([]*MatchPlayer, 0, 20)
 		arr = append(arr, mp)
-		gm.WaitingMatches = append(gm.WaitingMatches, &Match{mrp.MatchPlayerCount, arr})
+		nm := &Match{mrp.MatchPlayerCount, arr}
+		gm.WaitingMatches = append(gm.WaitingMatches, nm)
 		gm.MatchingMutex.Unlock()
+		if nm.Capacity == len(nm.Players) {
+			go gm.RunGameServer(nm)
+		}
 		return
 	}
 	gm.WaitingMatches[successInd].Players = append(gm.WaitingMatches[successInd].Players, mp)
@@ -50,6 +58,7 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel chan Co
 }
 
 func (gm *GameManager) RemovePlayer(player *Database.PlayerDB) bool {
+	fmt.Println("matchmaking stop")
 	gm.MatchingMutex.Lock()
 	for i := 0; i < len(gm.WaitingMatches); i++ {
 		ind := 0

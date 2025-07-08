@@ -43,11 +43,11 @@ func (context AuthenticatedContext) GetHandler(command Command) (CommandHandler,
 
 func (context AuthenticatedContext) GetPrompt() string { return "auth" }
 
-type PlayingContext struct {
+type WaitingContext struct {
 	CommandHandlers map[string]CommandHandler
 }
 
-func (context PlayingContext) GetHandler(command Command) (CommandHandler, error) {
+func (context WaitingContext) GetHandler(command Command) (CommandHandler, error) {
 	contextHandler, exists := context.CommandHandlers[command.Name]
 	if !exists {
 		return nil, errors.New("command not found")
@@ -55,7 +55,7 @@ func (context PlayingContext) GetHandler(command Command) (CommandHandler, error
 	return contextHandler, nil
 }
 
-func (context PlayingContext) GetPrompt() string { return "playing" }
+func (context WaitingContext) GetPrompt() string { return "waiting" }
 
 func NewNormalContext() Context {
 	return NormalContext{
@@ -72,17 +72,17 @@ func NewAuthenticatedContext() Context {
 	return AuthenticatedContext{
 		CommandHandlers: map[string]CommandHandler{
 			"logout": LogoutCommandHandler,
-			"play":   PlayCommandHandler,
+			"start":  StartGameCommandHandler,
 			"help":   AuthenticatedHelpCommandHandler,
 			"exit":   ExitCommandHandler,
 		},
 	}
 }
 
-func NewPlayingContext() Context {
-	return PlayingContext{
+func NewWaitingContext() Context {
+	return WaitingContext{
 		CommandHandlers: map[string]CommandHandler{
-			"quit": ExitCommandHandler,
+			"stop": StopWaitingCommandHandler,
 		},
 	}
 }

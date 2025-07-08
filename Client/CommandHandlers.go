@@ -50,7 +50,55 @@ func ParseRegisterReply(reply Reply) bool {
 		fmt.Println("Registration successful")
 		return true
 	} else {
-		fmt.Println("Registration failed received F")
+		fmt.Println("Registration failed")
+		return false
+	}
+}
+
+func StartGameCommandHandler(session *Session, command Command) {
+	message := command.Name
+	for i := 0; i < len(command.Args); i++ {
+		message += " " + command.Args[i]
+	}
+	err := session.ServerConn.WriteMessage(1, []byte(message))
+	if err != nil {
+		return
+	}
+	reply := <-session.ReplyChannel
+	if !ParsePlayReply(reply) {
+		return
+	}
+	session.Context = NewWaitingContext()
+}
+
+func ParsePlayReply(reply Reply) bool {
+	if reply.Message[0] == 'T' {
+		fmt.Println("Waiting for a game to begin")
+		return true
+	} else {
+		fmt.Println("Play command failed")
+		return false
+	}
+}
+
+func StopWaitingCommandHandler(session *Session, command Command) {
+	err := session.ServerConn.WriteMessage(1, []byte(command.Name))
+	if err != nil {
+		return
+	}
+	reply := <-session.ReplyChannel
+	if !ParseStopWaitingReply(reply) {
+		return
+	}
+	session.Context = NewAuthenticatedContext()
+}
+
+func ParseStopWaitingReply(reply Reply) bool {
+	if reply.Message[0] == 'T' {
+		fmt.Println("Stopped waiting")
+		return true
+	} else {
+		fmt.Println("still waiting")
 		return false
 	}
 }
@@ -106,8 +154,4 @@ func ExitCommandHandler(session *Session, command Command) {
 	} else {
 		panic(fmt.Errorf("exit failure"))
 	}
-}
-
-func PlayCommandHandler(session *Session, command Command) {
-	fmt.Println("play command")
 }
