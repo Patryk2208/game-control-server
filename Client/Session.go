@@ -46,6 +46,7 @@ func (s *Session) Reader(wg *sync.WaitGroup) {
 		if err != nil {
 			panic(err)
 		}
+		fmt.Printf("Message: %s\n", msg)
 		replyType, exists := ReplyTypeMapper[msgType]
 		if !exists {
 			fmt.Println("Unknown reply type:", msgType)

@@ -53,7 +53,7 @@ func StartGameRequestHandler(session *Session, request Communication.Request) {
 	fmt.Println("StartGameRequestHandler")
 	mrp := CreateMatchRequestParams(request)
 	session.ReplyMutex.Lock()
-	session.GameManager.AddPlayer(session.Player, session.ReplyQueue, session.ReplyMutex, mrp)
+	session.GameManager.AddPlayer(session.Player, &session.ReplyQueue, &session.ReplyMutex, mrp)
 	session.ReplyQueue <- Communication.Reply{Type: Communication.SystemReply, Message: "T"}
 	session.ReplyMutex.Unlock()
 	session.Context = NewWaitingContext()

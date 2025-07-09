@@ -25,7 +25,7 @@ func RunGameplay(message string) {
 		return
 	}
 	gip := GameInstanceParams{
-		GameExecutable: "", //todo
+		GameExecutable: "/home/patryk/Side_Projects/Game/GameInstance/Client/bin/Debug/net8.0/Client", //todo FOR TESTING ONLY
 		ServerIp:       ip,
 		ServerPort:     port,
 	}

@@ -75,6 +75,7 @@ func (s *Session) Writer(wg *sync.WaitGroup) {
 		return
 	}()
 	for reply := range s.ReplyQueue {
+		fmt.Printf("Read Reply from ReplyQueue %s\n", reply.Message)
 		handler, exists := ReplyHandlerMapper[reply.Type]
 		if !exists {
 			continue

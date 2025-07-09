@@ -21,7 +21,7 @@ spec:
         spec:
           containers:
             - name: game-server
-              image: rpg-game-server:local
+              image: test-rpg-gameserver:local
               resources:
                 limits:
                   cpu: "4"

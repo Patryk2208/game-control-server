@@ -27,8 +27,8 @@ type GameInstance struct {
 
 type MatchPlayer struct {
 	Player       *Database.PlayerDB
-	ReplyChannel chan Communication.Reply
-	ReplyMutex   sync.Mutex
+	ReplyChannel *chan Communication.Reply
+	ReplyMutex   *sync.Mutex
 }
 
 type Match struct {

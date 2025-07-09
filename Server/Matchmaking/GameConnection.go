@@ -9,7 +9,7 @@ import (
 )
 
 func (gm *GameManager) RunGameServer(readyGame *Match) {
-	fmt.Println("tries to run game server")
+	fmt.Println("tries to run game server from match ", readyGame.Capacity, " and players ", readyGame.Players[0].Player.Player_id)
 	gm.MatchingMutex.Lock()
 	ind := slices.Index(gm.WaitingMatches, readyGame)
 	if ind == -1 || len(readyGame.Players) != readyGame.Capacity {
@@ -43,12 +43,15 @@ func (gm *GameManager) RunGameServer(readyGame *Match) {
 	gm.ActiveMutex.Unlock()
 
 	universalReply := Communication.Reply{
-		Type:    Communication.GameReply,
+		Type:    Communication.SystemReply,
 		Message: fmt.Sprintf("G %s %d", ip, port),
 	}
+	fmt.Println("Sending to all players: ", universalReply)
 	for _, player := range readyGame.Players {
+		fmt.Println("Sending to player ", player.Player.Player_id)
 		player.ReplyMutex.Lock()
-		player.ReplyChannel <- universalReply
+		*player.ReplyChannel <- universalReply
+		fmt.Println("Sent to player ", player.Player.Player_id)
 		player.ReplyMutex.Unlock()
 	}
 	fmt.Println("game address sent to each player")

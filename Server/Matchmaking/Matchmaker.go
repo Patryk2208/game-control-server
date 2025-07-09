@@ -13,7 +13,7 @@ type MatchRequestParams struct {
 	MatchPairingPreferences []string
 }
 
-func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel chan Communication.Reply, replyMutex sync.Mutex, mrp MatchRequestParams) {
+func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan Communication.Reply, replyMutex *sync.Mutex, mrp MatchRequestParams) {
 	fmt.Println("Matchmaking start")
 	mp := &MatchPlayer{Player: player, ReplyChannel: replyChannel, ReplyMutex: replyMutex}
 	gm.MatchingMutex.Lock()
