@@ -7,11 +7,9 @@ spec:
   replicas: 1
   template:
     spec:
-      health:
-        disabled: true
       ports:
         - name: game
-          containerPort: 5555
+          containerPort: 7777
           portPolicy: Dynamic
           protocol: TCP
         - name: agones-sdk

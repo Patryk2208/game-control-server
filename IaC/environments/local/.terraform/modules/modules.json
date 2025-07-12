@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"agones","Source":"./modules/agones","Dir":""},{"Key":"database","Source":"./modules/database","Dir":""},{"Key":"local_env","Source":"./environments/local","Dir":""},{"Key":"matchmaker","Source":"./modules/matchmaker","Dir":""}]}
