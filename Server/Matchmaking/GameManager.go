@@ -60,6 +60,7 @@ func NewGameManager(dbp *Database.DBConnectionPool) (*GameManager, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to create Kubernetes client: %w", err)
 	}
+	fmt.Println("correct agones and kubernetes client creation")
 	const maxMatchCount = 10000
 	return &GameManager{
 		MatchingMutex: sync.Mutex{},

@@ -35,6 +35,7 @@ func SystemReplyHandler(session *Session, reply Reply) {
 	if len(reply.Message) <= 0 {
 		return
 	} else if reply.Message[0] == 'G' {
+		fmt.Println(reply.Message)
 		GameplayManager.RunGameplay(reply.Message[2:])
 		session.Context = NewAuthenticatedContext()
 		session.OperationComplete.L.Lock()

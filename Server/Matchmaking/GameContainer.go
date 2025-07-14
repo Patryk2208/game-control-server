@@ -18,13 +18,13 @@ type ContainerizationInfo struct {
 }
 
 func (gm *GameManager) AllocateGameServer(ctx context.Context) (string, int, error) {
-	info, err := gm.ContainerInfo.AgonesClient.AgonesV1().GameServers("game").List(ctx, metav1.ListOptions{})
+	/*info, err := gm.ContainerInfo.AgonesClient.AgonesV1().GameServers("game").List(ctx, metav1.ListOptions{})
 	if err != nil {
 		return "", 0, err
 	}
 	for i := range info.Items {
 		fmt.Println(info.Items[i].Name, info.Items[i].Status.State)
-	}
+	}*/
 	alloc, err := gm.ContainerInfo.AgonesClient.AllocationV1().GameServerAllocations(gm.ContainerInfo.Namespace).Create(ctx, gm.ContainerInfo.AllocationTemplate, metav1.CreateOptions{})
 	if err != nil {
 		return "", 0, fmt.Errorf("failed to create GameServerAllocation: %w", err)

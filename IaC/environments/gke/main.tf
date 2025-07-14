@@ -21,7 +21,7 @@ resource "google_container_node_pool" "game_nodes" {
   node_config {
     machine_type = "e2-micro"
     oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
+      "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/devstorage.read_only",
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring"
@@ -36,7 +36,7 @@ resource "google_sql_database_instance" "postgres" {
   deletion_protection = false
 
   settings {
-    tier = "db-f1-micro"  # Free tier
+    tier = "db-f1-micro"
     ip_configuration {
       ipv4_enabled    = false
       private_network = "default"
@@ -49,8 +49,8 @@ resource "google_sql_database" "users_db" {
   instance = google_sql_database_instance.postgres.name
 }
 
-resource "google_sql_user" "game_user" {
-  name     = "gameuser"
+resource "google_sql_user" "dev_user" {
+  name     = "devuser"
   instance = google_sql_database_instance.postgres.name
   password = var.db_password
 }
@@ -68,10 +68,13 @@ resource "helm_release" "agones" {
     name  = "agones.ping.http.enabled"
     value = "false"
   }
-
   set {
-    name  = "agones.ping.udp.enabled"
-    value = "false"
+    name = "agones.crds.install"
+    value = "true"
+  }
+  set {
+    name = "agones.featureGates=PlayerTracking"
+    value = "true"
   }
 
   depends_on = [google_container_node_pool.game_nodes]

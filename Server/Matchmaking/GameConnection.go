@@ -22,11 +22,11 @@ func (gm *GameManager) RunGameServer(readyGame *Match) {
 
 	ctx := context.Background()
 	ip, port, err := gm.AllocateGameServer(ctx)
-	fmt.Println("game server created")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println("game server created")
 	//todo add game instance to db
 
 	gi := &GameInstance{
@@ -62,6 +62,7 @@ func (gm *GameManager) RunGameServer(readyGame *Match) {
 	//todo move to archived in db
 	ind = slices.Index(gm.ActiveGames, gi)
 	if ind != -1 {
+		gm.ActiveMutex.Unlock()
 		fmt.Println("game already closed")
 		return
 	}

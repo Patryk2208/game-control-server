@@ -81,6 +81,7 @@ func (s *Session) Writer(wg *sync.WaitGroup) {
 		return
 	}()
 	for command := range s.CommandQueue {
+		fmt.Printf("Command: %s %s\n", command.Name, command.Args)
 		handler, err := s.Context.GetHandler(command)
 		if err != nil {
 			fmt.Println("Unknown command:", command)

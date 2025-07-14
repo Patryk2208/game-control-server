@@ -8,6 +8,9 @@ spec:
   policy:
     type: Buffer
     buffer:
-      bufferSize: 20%
-      maxReplicas: 10
+      bufferSize: 2
+      maxReplicas: 20
       minReplicas: 3
+  sync:
+    fixedInterval:
+      seconds: 15
