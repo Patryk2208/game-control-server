@@ -1,0 +1,5 @@
+prompts_for_gke_migration.txt
+
+./Iac/*.json
+
+*.tfvars

@@ -1,8 +1,3 @@
-provider "google" {
-  project = var.project_id
-  region  = var.region
-}
-
 resource "google_container_cluster" "game_cluster" {
   name     = "game-platform-cluster"
   location = var.region
