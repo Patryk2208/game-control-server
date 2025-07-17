@@ -42,7 +42,7 @@ resource "google_compute_router_nat" "game_nat" {
   }
 }
 
-# FIREWALL
+
 resource "google_compute_firewall" "allow_internal" {
   name        = "allow-internal"
   network     = google_compute_network.game_vpc.name

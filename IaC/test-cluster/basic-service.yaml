@@ -4,7 +4,7 @@ metadata:
   name: test-service
 spec:
   selector:
-    run: test-server
+    app: test-server
   ports:
     - protocol: TCP
       port: 80

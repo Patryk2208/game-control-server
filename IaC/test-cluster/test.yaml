@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: test-server
-  labels:
-    app: test-server
 spec:
   replicas: 1
   selector:
@@ -17,10 +15,15 @@ spec:
     spec:
       containers:
         - name: test-server-container
-          image: nginx
+          image: nginx:alpine
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
-              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
       restartPolicy: Always
       
