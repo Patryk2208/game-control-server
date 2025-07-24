@@ -25,7 +25,7 @@ variable "service_account_key_path" {
 variable "cluster_name" {
   description = "Gke cluster name"
   type = string
-  default = "game_cluster"
+  default = "game-cluster"
 }
 
 variable "github_owner" {
@@ -38,4 +38,22 @@ variable "github_repo" {
   description = "Github project repo"
   type = string
   default = "game-control-server"
+}
+
+variable "ci_workflow_file" {
+  description = "Path to CI.yml"
+  type = string
+  default = "CI.yml"
+}
+
+variable "cd_workflow_file" {
+  description = "Path to CD.yml"
+  type = string
+  default = "CD.yml"
+}
+
+variable "github_provider_branch" {
+  description = "branch for providers"
+  type = string
+  default = "refs/heads/main"
 }

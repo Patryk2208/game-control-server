@@ -18,11 +18,13 @@ resource "google_project_iam_member" "sa_roles" {
     "roles/resourcemanager.projectIamAdmin",
     "roles/container.admin",        # GKE management
     "roles/compute.networkAdmin",   # VPC/firewall rules
-    "roles/iam.serviceAccountUser",    # Bind service accounts to resources
+    "roles/iam.serviceAccountAdmin",    # Bind service accounts to resources
     "roles/serviceusage.serviceUsageAdmin", # Enable/disable services
     "roles/logging.admin",             # For cluster logging
     "roles/monitoring.admin",          # For cluster monitoring
-    "roles/compute.securityAdmin" # For firewall management
+    "roles/compute.securityAdmin", # For firewall management
+    "roles/artifactregistry.admin",
+    "roles/iam.workloadIdentityPoolAdmin"
   ])
   project = var.project_id
   role    = each.key

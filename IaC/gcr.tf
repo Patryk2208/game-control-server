@@ -21,26 +21,57 @@ resource "google_service_account_iam_member" "workload_identity" {
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github_pool.name}/attribute.repository/${var.github_owner}/${var.github_repo}"
 }
 
+locals {
+  attribute_mapping = {
+    "google.subject"      = "assertion.sub"
+    "attribute.actor"     = "assertion.actor"
+    "attribute.repository"= "assertion.repository"
+    "attribute.ref"       = "assertion.ref"
+    "attribute.workflow"  = "assertion.workflow"
+    "attribute.environment" = "assertion.environment"
+    "attribute.job_workflow_ref" = "assertion.job_workflow_ref"
+  }
+}
+
 resource "google_iam_workload_identity_pool" "github_pool" {
   workload_identity_pool_id = "github-pool"
   display_name              = "GitHub Actions Pool"
 }
 
-resource "google_iam_workload_identity_pool_provider" "github_provider" {
+resource "google_iam_workload_identity_pool_provider" "github_ci_provider" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
-  workload_identity_pool_provider_id = "github-provider"
-  display_name                       = "GitHub Actions Provider"
-
-  attribute_mapping = {
-    "google.subject"       = "assertion.sub"
-    "attribute.actor"      = "assertion.actor"
-    "attribute.aud"        = "assertion.aud"
-    "attribute.repository" = "assertion.repository"
-  }
+  workload_identity_pool_provider_id = "ci-provider"
+  display_name                       = "GH Actions CI Provider"
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
+
+  attribute_mapping = local.attribute_mapping
+
+  attribute_condition = <<-EOT
+    assertion.repository == "${var.github_owner}/${var.github_repo}" &&
+    assertion.workflow == "${var.ci_workflow_file}" &&
+    assertion.ref == "${var.github_provider_branch}"
+  EOT
+}
+
+resource "google_iam_workload_identity_pool_provider" "github_cd_provider" {
+  workload_identity_pool_id = google_iam_workload_identity_pool.github_pool.workload_identity_pool_id
+  workload_identity_pool_provider_id = "cd-provider"
+  display_name = "GH Actions CD Provider"
+
+  oidc {
+    issuer_uri = "https://token.actions.githubusercontent.com"
+  }
+
+  attribute_mapping = local.attribute_mapping
+
+  attribute_condition = <<-EOT
+    assertion.repository == "${var.github_owner}/${var.github_repo}" &&
+    assertion.workflow == "${var.cd_workflow_file}" &&
+    assertion.ref == "${var.github_provider_branch}"
+  EOT
 }
 
 resource "google_artifact_registry_repository" "game_server" {
