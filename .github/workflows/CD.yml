@@ -1,0 +1,37 @@
+name: Continuous Deployment for the Go Server
+on:
+  workflow_run:
+    workflows: ['Continuous Integration for the Go server']
+    branches: [main]
+    types:
+      - completed
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    # GCP auth section
+    - name: Authenticate to GCP
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: '${{ secrets.GCP_WORKLOAD_ID_PROVIDER }}'
+        service_account: '${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}'
+    # Cluster setup section
+    - name: Configure GKE culster access
+      uses: google-github-actions/get-gke-credentials@v1
+      with:
+        cluster_name: '${{ secrets.GKE_CLUSTER }}'
+        location: '${{ secrets.GKE_ZONE }}'
+        project_id: '${{ secrets.GCP_PROJECT_ID }}'
+    # Deployment section
+    - name: Deploy Go Server
+      run: |
+        kubectl set image ${{ secrets.GCP_GO_SERVER_RESOURCE_TYPE }}/${{ secrets.GCP_GO_SERVER_NAME }} \
+          ${{ secrets.GCP_GO_SERVER_CONTAINER_NAME }}=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:${{ github.sha }} \
+          --record
+
+        
