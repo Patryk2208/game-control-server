@@ -1,0 +1,77 @@
+name: Continuous Integration for the Go server
+on: 
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    defaults:
+      run:
+        working-directory: ./Server
+    steps: 
+    # Setup section
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24.x'
+  
+    - name: Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+      
+    - name: Deps
+      run: go mod tidy
+      
+  
+    # Testing section
+    - name: Simple syntax test
+      run: go vet
+
+    - name: Test build before testing
+      run: go build -v -o server_test_build
+
+    ### testing todo
+
+    
+    # GCP auth section
+    - name: Authenticate to GCP
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: '${{ secrets.GCP_WORKLOAD_ID_PROVIDER }}'
+        service_account: '${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}'
+
+    
+    # Docker section
+    - name: Docker buildx setup
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Build and Cache Go Server
+      uses: docker/build-push-action@v6
+      with:
+        context: go-services/auth
+        file: go-services/auth/Dockerfile
+        tags: |
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:${{ github.sha }}
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    
+    
+    
