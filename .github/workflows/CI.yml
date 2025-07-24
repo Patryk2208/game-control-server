@@ -67,8 +67,8 @@ jobs:
         context: go-services/auth
         file: go-services/auth/Dockerfile
         tags: |
-          gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-service:${{ github.sha }}
-          gcr.io/${{ secrets.GCP_PROJECT_ID }}/auth-service:latest
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:${{ github.sha }}
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
