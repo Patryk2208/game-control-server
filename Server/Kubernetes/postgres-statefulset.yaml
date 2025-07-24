@@ -38,16 +38,13 @@ spec:
           volumeMounts:
             - name: test-postgres-claim
               mountPath: /var/lib/postgresql/data
-          resources:
-            requests:
-              memory: 256Mi
-              cpu: "0.1"
   volumeClaimTemplates:
     - metadata:
         name: test-postgres-claim
       spec:
         accessModes: [ "ReadWriteOnce" ]
-        storageClassName: standard
+        storageClassName: postgres-ssd
         resources:
           requests:
-            storage: 1Gi
+            storage: 20Gi
+        volumeMode: Filesystem

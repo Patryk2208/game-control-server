@@ -18,8 +18,8 @@ func (context WaitingUserConnectionContext) GetHandler(request *Communication.Re
 }
 
 func NewWaitingContext() UserConnectionContext {
-	return PlayingUserConnectionContext{
-		PlayingContextRequestMapper: map[Communication.RequestType]RequestHandler{
+	return WaitingUserConnectionContext{
+		WaitingContextRequestMapper: map[Communication.RequestType]RequestHandler{
 			StopWaitingRequest: StopWaitingRequestHandler,
 			LogoutRequest:      StopWaitingAndLogoutRequestHandler,
 			ExitRequest:        StopWaitingAndExitRequestHandler,

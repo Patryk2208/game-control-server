@@ -1,4 +1,4 @@
-resource "google_container_cluster" "test_cluster" {
+/*resource "google_container_cluster" "test_cluster" {
   name     = "network-test-cluster"
   location = var.zone
   deletion_protection = false
@@ -48,4 +48,4 @@ resource "google_project_iam_member" "node_roles" {
   project = var.project_id
   role   = each.key
   member = "serviceAccount:${google_service_account.gke_node.email}"
-}
+}*/

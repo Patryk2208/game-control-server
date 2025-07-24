@@ -21,3 +21,21 @@ variable "service_account_key_path" {
   type        = string
   sensitive   = true
 }
+
+variable "cluster_name" {
+  description = "Gke cluster name"
+  type = string
+  default = "game_cluster"
+}
+
+variable "github_owner" {
+  description = "Github repo owner name"
+  type = string
+  default = "Patryk2208"
+}
+
+variable "github_repo" {
+  description = "Github project repo"
+  type = string
+  default = "game-control-server"
+}

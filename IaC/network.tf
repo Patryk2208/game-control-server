@@ -106,17 +106,12 @@ resource "google_compute_firewall" "allow_game_tcp" {
   target_tags   = ["game-server"]
 }
 
+resource "google_compute_address" "matchmaking_ip" {
+  name   = "matchmaking-lb-ip"
+  region = var.region
+}
 
-/*resource "google_compute_firewall" "allow_ssh" {
-  name        = "allow-ssh"
-  network     = google_compute_network.game_vpc.name
-  direction   = "INGRESS"
-
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-
-  source_ranges = ["/32"]  //todo
-  target_tags   = ["ssh"]
-}*/
+resource "google_compute_address" "agones_allocator" {
+  name   = "agones-allocator-ip"
+  region = var.region
+}

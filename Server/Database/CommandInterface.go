@@ -68,3 +68,11 @@ func (pool *DBConnectionPool) TryLogout(player *PlayerDB) (bool, error) {
 	}
 	return true, nil
 }
+
+func (pool *DBConnectionPool) TryStartSession(ctx context.Context, player *PlayerDB) (bool, error) {
+	return true, nil //todo
+}
+
+func (pool *DBConnectionPool) TryStopSession(ctx context.Context, player *PlayerDB) (bool, error) {
+	return true, nil //todo
+}

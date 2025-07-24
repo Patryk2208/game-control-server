@@ -1,8 +1,8 @@
 resource "google_project_service" "services" {
   for_each = toset([
-    "container.googleapis.com",   # GKE
-    "compute.googleapis.com",     # Networking
-    //"gameservices.googleapis.com",# Game servers
+    "container.googleapis.com",
+    "compute.googleapis.com",
+    "containerregistry.googleapis.com"
   ])
   service            = each.key
   disable_on_destroy = false

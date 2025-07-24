@@ -48,7 +48,7 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 
 func basicListen() {
 	http.HandleFunc("/ws", handleConnection)
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8080", nil) //todo
 	if err != nil {
 		return
 	}
