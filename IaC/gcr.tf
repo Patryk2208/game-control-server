@@ -50,7 +50,7 @@ resource "google_iam_workload_identity_pool_provider" "github_ci_provider" {
 
   attribute_condition = <<-EOT
     assertion.repository == "${var.github_owner}/${var.github_repo}" &&
-    assertion.workflow == "${var.ci_workflow_file}" &&
+    assertion.workflow == "${var.ci_workflow}" &&
     assertion.ref == "${var.github_provider_branch}"
   EOT
 }
@@ -68,7 +68,7 @@ resource "google_iam_workload_identity_pool_provider" "github_cd_provider" {
 
   attribute_condition = <<-EOT
     assertion.repository == "${var.github_owner}/${var.github_repo}" &&
-    assertion.workflow == "${var.cd_workflow_file}" &&
+    assertion.workflow == "${var.cd_workflow}" &&
     assertion.ref == "${var.github_provider_branch}"
   EOT
 }

@@ -40,16 +40,16 @@ variable "github_repo" {
   default = "game-control-server"
 }
 
-variable "ci_workflow_file" {
-  description = "Path to CI.yml"
+variable "ci_workflow" {
+  description = "CI name"
   type = string
-  default = "CI.yml"
+  default = "CI"
 }
 
-variable "cd_workflow_file" {
-  description = "Path to CD.yml"
+variable "cd_workflow" {
+  description = "CD name"
   type = string
-  default = "CD.yml"
+  default = "CD"
 }
 
 variable "github_provider_branch" {
