@@ -28,8 +28,6 @@ locals {
     "attribute.repository"= "assertion.repository"
     "attribute.ref"       = "assertion.ref"
     "attribute.workflow"  = "assertion.workflow"
-    "attribute.environment" = "assertion.environment"
-    "attribute.job_workflow_ref" = "assertion.job_workflow_ref"
   }
 }
 
