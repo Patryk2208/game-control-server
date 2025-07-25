@@ -46,15 +46,7 @@ jobs:
       run: go build -v -o server_test_build
 
     ### testing todo
-
-
-    - name: Test gh params
-      run: |
-        echo "REPO: $GITHUB_REPOSITORY"
-        echo "REF:  $GITHUB_REF"
-        echo "ACTOR: $GITHUB_ACTOR"
-        echo "WORKFLOW: $GITHUB_WORKFLOW"
-        echo "EVENT: $GITHUB_EVENT_NAME"
+    
     
     # GCP auth section
     - name: Authenticate to GCP
