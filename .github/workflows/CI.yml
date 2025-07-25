@@ -59,7 +59,7 @@ jobs:
     
     # Docker section
     - name: Docker auth
-      run: echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin https://${{ secret.GKE_REGION }}-docker.pkg.dev
+      run: echo "${{ steps.auth.outputs.access_token }}" | docker login -u oauth2accesstoken --password-stdin https://${{ secrets.GKE_REGION }}-docker.pkg.dev
     
     - name: Docker buildx setup
       uses: docker/setup-buildx-action@v3
