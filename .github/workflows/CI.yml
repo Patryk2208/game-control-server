@@ -49,12 +49,12 @@ jobs:
 
 
     - name: Test gih params
-        run: |
-          echo "REPO: $GITHUB_REPOSITORY"
-          echo "REF:  $GITHUB_REF"
-          echo "ACTOR: $GITHUB_ACTOR"
-          echo "WORKFLOW: $GITHUB_WORKFLOW"
-          echo "EVENT: $GITHUB_EVENT_NAME"
+      run: |
+        echo "REPO: $GITHUB_REPOSITORY"
+        echo "REF:  $GITHUB_REF"
+        echo "ACTOR: $GITHUB_ACTOR"
+        echo "WORKFLOW: $GITHUB_WORKFLOW"
+        echo "EVENT: $GITHUB_EVENT_NAME"
     
     # GCP auth section
     - name: Authenticate to GCP
