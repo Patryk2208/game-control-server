@@ -48,7 +48,7 @@ jobs:
     ### testing todo
 
 
-    - name: Test gih params
+    - name: Test gh params
       run: |
         echo "REPO: $GITHUB_REPOSITORY"
         echo "REF:  $GITHUB_REF"
@@ -63,6 +63,7 @@ jobs:
       with:
         workload_identity_provider: ${{ secrets.GCP_CI_WORKLOAD_ID_PROVIDER }}
         service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+        enable_debug_logs: true
     
     # Docker section
     - name: Docker buildx setup
