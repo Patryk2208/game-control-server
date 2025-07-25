@@ -19,7 +19,7 @@ spec:
       serviceAccountName: matchmaker-service-account
       containers:
         - name: server-container
-          image: test-game-server:local
+          image: game-control-server://todo
           imagePullPolicy: Never
           ports:
             - containerPort: 8080

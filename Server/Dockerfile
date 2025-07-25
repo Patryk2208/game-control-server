@@ -10,5 +10,5 @@ FROM alpine:3.16 AS run_stage
 RUN apk add --no-cache ca-certificates
 COPY --from=build_stage /app/Server /Server
 
-EXPOSE 8080
+EXPOSE 80
 CMD ["/Server"]
