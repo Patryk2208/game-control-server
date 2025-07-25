@@ -35,6 +35,8 @@ spec:
                 secretKeyRef:
                   name: postgres-basic-auth
                   key: password
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
           volumeMounts:
             - name: test-postgres-claim
               mountPath: /var/lib/postgresql/data

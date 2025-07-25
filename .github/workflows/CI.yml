@@ -1,4 +1,4 @@
-name: Continuous Integration for the Go server
+name: CI
 on: 
   push:
     branches: [ main ]
@@ -53,8 +53,8 @@ jobs:
       id: auth
       uses: google-github-actions/auth@v2
       with:
-        workload_identity_provider: '${{ secrets.GCP_WORKLOAD_ID_PROVIDER }}'
-        service_account: '${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}'
+        workload_identity_provider: ${{ secrets.GCP_CI_WORKLOAD_ID_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
 
     
     # Docker section
