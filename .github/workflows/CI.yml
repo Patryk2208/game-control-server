@@ -65,9 +65,10 @@ jobs:
       with:
         context: ./Server
         file: ./Server/Dockerfile
+        push: true
         tags: |
-          gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:${{ github.sha }}
-          gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:latest
+          ${{ secrets.GKE_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GAR_REPO }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:${{ github.sha }}
+          ${{ secrets.GKE_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GAR_REPO }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
