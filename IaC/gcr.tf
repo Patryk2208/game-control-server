@@ -76,7 +76,7 @@ resource "google_iam_workload_identity_pool_provider" "github_cd_provider" {
 
 resource "google_artifact_registry_repository" "game_server" {
   location      = var.region
-  repository_id = "game-repo"
+  repository_id = var.gar_repo_name
   description   = "Docker repository for game containers"
   format        = "DOCKER"
 

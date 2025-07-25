@@ -28,6 +28,12 @@ variable "cluster_name" {
   default = "game-cluster"
 }
 
+variable "gar_repo_name" {
+  description = "Name of the project's google artifact registry repo"
+  type = string
+  default = "game-repo"
+}
+
 variable "github_owner" {
   description = "Github repo owner name"
   type = string
