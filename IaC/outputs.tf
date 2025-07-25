@@ -8,7 +8,7 @@ output "enabled_apis" {
   description = "List of enabled APIs"
 }*/
 
-output "cluster_name" {
+/*output "cluster_name" {
   value = var.cluster_name
   description = "Cluster name"
 }
@@ -31,4 +31,4 @@ output "gcp_wid_ci_provider" {
 output "gcp_wid_cd_provider" {
   value = google_iam_workload_identity_pool_provider.github_cd_provider.name
   description = "Full Workload Identity Provider path for CD"
-}
+}*/

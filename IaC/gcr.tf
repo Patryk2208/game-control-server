@@ -36,6 +36,7 @@ locals {
 resource "google_iam_workload_identity_pool" "github_pool" {
   workload_identity_pool_id = "github-pool"
   display_name              = "GitHub Actions Pool"
+  project = var.project_id
 }
 
 resource "google_iam_workload_identity_pool_provider" "github_ci_provider" {
