@@ -55,7 +55,6 @@ jobs:
       with:
         workload_identity_provider: ${{ secrets.GCP_CI_WORKLOAD_ID_PROVIDER }}
         service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
-        enable_debug_logs: true
     
     # Docker section
     - name: Docker buildx setup
@@ -64,7 +63,7 @@ jobs:
     - name: Build and Cache Go Server
       uses: docker/build-push-action@v6
       with:
-        context: ./Servevr
+        context: ./Server
         file: ./Server/Dockerfile
         tags: |
           gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:${{ github.sha }}
