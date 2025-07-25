@@ -1,6 +1,7 @@
 prompts_for_gke_migration.txt
 
 keys
+Server/Kubernetes/postgres-secret-local.yaml
 
 *.tfvars
 
