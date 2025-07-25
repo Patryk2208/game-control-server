@@ -21,14 +21,24 @@ output "zone" {
 output "gcp_github_service_account_email" {
   value       = google_service_account.github_deployer.email
   description = "Email of the CI Service Account"
+}*/
+
+/*output "gcp_wid_ci_provider_cs" {
+  value = google_iam_workload_identity_pool_provider.github_ci_provider_control_server.name
+  description = "CS CI"
 }
 
-output "gcp_wid_ci_provider" {
-  value = google_iam_workload_identity_pool_provider.github_ci_provider.name
-  description = "Full Workload Identity Provider path for CI"
+output "gcp_wid_cd_provider_cs" {
+  value = google_iam_workload_identity_pool_provider.github_cd_provider_control_server.name
+  description = "CS CD"
 }
 
-output "gcp_wid_cd_provider" {
-  value = google_iam_workload_identity_pool_provider.github_cd_provider.name
-  description = "Full Workload Identity Provider path for CD"
+output "gcp_wid_ci_provider_gs" {
+  value = google_iam_workload_identity_pool_provider.github_ci_provider_gameserver.name
+  description = "GS CI"
+}
+
+output "gcp_wid_cd_provider_gs" {
+  value = google_iam_workload_identity_pool_provider.github_cd_provider_gameserver.name
+  description = "GS CD"
 }*/

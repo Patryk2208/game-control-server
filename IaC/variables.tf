@@ -40,10 +40,16 @@ variable "github_owner" {
   default = "Patryk2208"
 }
 
-variable "github_repo" {
-  description = "Github project repo"
+variable "github_control_server_repo" {
+  description = "Github main repo"
   type = string
   default = "game-control-server"
+}
+
+variable "github_gameserver_repo" {
+  description = "Github game repo"
+  type = string
+  default = "console-game-ood"
 }
 
 variable "ci_workflow" {
