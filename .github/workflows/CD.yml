@@ -13,6 +13,10 @@ jobs:
       id-token: write
       contents: read
     steps:
+    # Checkout section
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
     # GCP auth section
     - name: Authenticate to GCP
       id: auth
