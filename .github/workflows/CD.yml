@@ -37,6 +37,5 @@ jobs:
     - name: Deploy to GKE
       run: |
         envsubst < ./Server/Kubernetes/server-deployment.yaml.template | kubectl apply -f -
-        kubectl apply -f ./Server/Kubernetes
       env:
         IMAGE_PATH: ${{ secrets.GKE_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GAR_REPO }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:${{ github.sha }}       
