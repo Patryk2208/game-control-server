@@ -28,7 +28,5 @@ jobs:
         location: ${{ secrets.GKE_ZONE }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
     # Deployment section
-    - name: Deploy Go Server
-      run: |
-        kubectl set image deployment/${{ secrets.GCP_GO_SERVER_NAME }} ${{ secrets.GCP_GO_SERVER_CONTAINER_NAME }}=gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:${{ github.sha }}
+    # todo
         

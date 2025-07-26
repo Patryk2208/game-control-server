@@ -123,6 +123,6 @@ resource "google_artifact_registry_repository" "game_server" {
   format        = "DOCKER"
 
   docker_config {
-    immutable_tags = true
+    immutable_tags = false
   }
 }
