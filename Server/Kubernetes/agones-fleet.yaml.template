@@ -25,8 +25,5 @@ spec:
         spec:
           containers:
             - name: game-server
-              image: rpg-gameserver://todo
-              resources:
-                limits:
-                  cpu: "4"
-                  memory: "1Gi"
+              image: ${IMAGE_PATH}
+              imagePullPolicy: Always

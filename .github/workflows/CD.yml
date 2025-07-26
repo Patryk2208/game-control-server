@@ -20,6 +20,7 @@ jobs:
       with:
         workload_identity_provider: ${{ secrets.GCP_CD_WORKLOAD_ID_PROVIDER }}
         service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+        
     # Cluster setup section
     - name: Configure GKE culster access
       uses: google-github-actions/get-gke-credentials@v1
@@ -27,6 +28,11 @@ jobs:
         cluster_name: ${{ secrets.GKE_CLUSTER }}
         location: ${{ secrets.GKE_ZONE }}
         project_id: ${{ secrets.GCP_PROJECT_ID }}
-    # Deployment section
-    # todo
         
+    # Deployment section
+    - name: Deploy to GKE
+      run: |
+        envsubst < ./Server/Kubernetes/server-deployment.yaml.template | kubectl apply -f -
+        kubectl apply -f ./Server/Kubernetes
+      env:
+        IMAGE_PATH: ${{ secrets.GKE_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GAR_REPO }}/${{ secrets.GCP_GO_SERVER_IMAGE_NAME }}:${{ github.sha }}       

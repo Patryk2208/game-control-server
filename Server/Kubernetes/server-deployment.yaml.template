@@ -19,8 +19,8 @@ spec:
       serviceAccountName: matchmaker-service-account
       containers:
         - name: server-container
-          image: game-control-server://todo
-          imagePullPolicy: Never
+          image: ${IMAGE_PATH}
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
               protocol: TCP
