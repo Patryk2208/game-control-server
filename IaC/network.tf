@@ -9,6 +9,7 @@ resource "google_compute_subnetwork" "game_subnet" {
   ip_cidr_range = "10.10.1.0/24"
   region        = var.region
   network       = google_compute_network.game_vpc.id
+  private_ip_google_access = true
 
   secondary_ip_range {
     range_name    = "pods"

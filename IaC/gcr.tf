@@ -7,7 +7,7 @@ resource "google_project_iam_member" "deployer_roles" {
   for_each = toset([
     "roles/container.developer",
     "roles/storage.admin",
-    "roles/artifactregistry.writer"
+    "roles/artifactregistry.admin"
   ])
 
   project = var.project_id

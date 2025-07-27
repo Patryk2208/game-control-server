@@ -45,7 +45,7 @@ resource "google_container_cluster" "game_cluster" {
   node_config {
     service_account = google_service_account.gke_node_sa.email
     machine_type = "e2-standard-4"
-    disk_size_gb = 40
+    disk_size_gb = 60
     disk_type    = "pd-ssd"
 
     tags = ["game-server", "matchmaking", "database"]
