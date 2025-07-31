@@ -1,0 +1,29 @@
+build-go-for-linux-64:
+  go build -ldflags="-s -w" -trimpath -o bin/linux-64/coodg
+
+build-go-for-win-64:
+  GOOS=windows GOARCH=amd64 go build -ldflags="-s -w -H=windowsgui" -trimpath -o bin/win-64/coodg.exe
+
+build-go-for-mac-64:
+  go build -ldflags="-s -w" -trimpath -o bin/mac-64/coodg
+
+go-builds: build-go-for-linux-64 build-go-for-win-64 build-go-for-mac-64
+
+
+build-game-for-linux-64:
+  dotnet publish ../GameInstance/Client -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true -p:TrimMode=link -o ./bin/linux-64/
+
+build-game-for-win-64:
+  dotnet publish ../GameInstance/Client -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true -p:TrimMode=link -o ./bin/win-64/
+
+build-game-for-mac-64:
+  dotnet publish ../GameInstance/Client -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true -p:TrimMode=link -o ./bin/mac-64/
+
+game-builds: build-game-for-linux-64 build-game-for-win-64 build-game-for-mac-64
+
+#todo compress
+
+clean:
+  #todo
+
+all: game-builds go-builds

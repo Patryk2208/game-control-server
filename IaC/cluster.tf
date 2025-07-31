@@ -6,7 +6,8 @@ resource "google_service_account" "gke_node_sa" {
 resource "google_project_iam_member" "node_roles" {
   for_each = toset([
     "roles/compute.storageAdmin",
-    "roles/container.defaultNodeServiceAccount"
+    "roles/container.defaultNodeServiceAccount",
+    "roles/artifactregistry.reader"
   ])
   project = var.project_id
   role    = each.key

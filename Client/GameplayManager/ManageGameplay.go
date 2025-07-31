@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -25,20 +26,56 @@ func RunGameplay(message string) {
 		return
 	}
 	gip := GameInstanceParams{
-		GameExecutable: "/home/patryk/Side_Projects/Game/GameInstance/Client/bin/Debug/net8.0/Client", //todo FOR TESTING ONLY
+		GameExecutable: "",
 		ServerIp:       ip,
 		ServerPort:     port,
 	}
+	if runtime.GOOS == "linux" {
+		gip.GameExecutable = "./Client"
+	} else if runtime.GOOS == "windows" {
+		gip.GameExecutable = ".\\Client.exe"
+	} else {
+		return
+	}
+
 	StartGameplay(gip)
+}
+
+func ManageInput(cmd *exec.Cmd) {
+	stdinPipe, _ := cmd.StdinPipe()
+	inputChan := make(chan byte, 32)
+
+	if runtime.GOOS == "windows" {
+		exec.Command("cmd", "/c", "REG ADD HKCU\\CONSOLE /v QuickEdit /t REG_DWORD /d 0 /f").Run()
+	}
+
+	go func() {
+		buf := make([]byte, 1)
+		for {
+			n, err := os.Stdin.Read(buf)
+			if err != nil || n == 0 {
+				close(inputChan)
+				return
+			}
+			inputChan <- buf[0]
+		}
+	}()
+
+	go func() {
+		for b := range inputChan {
+			stdinPipe.Write([]byte{b})
+		}
+	}()
 }
 
 func StartGameplay(gip GameInstanceParams) (bool, error) {
 	GameProgram := exec.Command(gip.GameExecutable,
 		gip.ServerIp,
 		strconv.Itoa(gip.ServerPort))
-	GameProgram.Stdin = os.Stdin
 	GameProgram.Stdout = os.Stdout
 	GameProgram.Stderr = os.Stderr
+
+	ManageInput(GameProgram)
 	err := GameProgram.Run()
 	if err != nil {
 		return false, err

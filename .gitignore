@@ -3,6 +3,8 @@ prompts_for_gke_migration.txt
 keys
 Server/Kubernetes/*secret-local.yaml
 
+Client/bin
+
 *.tfvars
 
 # Local .terraform directories
