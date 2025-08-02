@@ -58,6 +58,7 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan C
 			fmt.Println("Found Match with degree: ", matchDegree)
 		}
 	}
+	fmt.Printf("Found %d matches\n", bestMatching.Size())
 
 	if bestMatching.Empty() {
 		fmt.Println("Matchmaker didn't find a match, starts a new one")
@@ -73,6 +74,7 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan C
 		}
 		return
 	}
+	fmt.Println("Found matches")
 	rawBestFit, _ := bestMatching.Dequeue()
 	bestFit := rawBestFit.(MatchingMatches).match
 	fmt.Println("Match found, added to a waiting match")
