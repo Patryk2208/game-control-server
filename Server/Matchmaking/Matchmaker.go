@@ -19,8 +19,8 @@ type MatchingMatches struct {
 	match      *Match
 }
 
-func NewMatchingMatches(matchScale float32, match *Match) *MatchingMatches {
-	return &MatchingMatches{match: match, matchScale: matchScale}
+func NewMatchingMatches(matchScale float32, match *Match) MatchingMatches {
+	return MatchingMatches{match: match, matchScale: matchScale}
 }
 
 func MatchingMatchesComparator(a interface{}, b interface{}) int {
