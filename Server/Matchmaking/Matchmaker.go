@@ -43,19 +43,19 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan C
 	fmt.Println("Matchmaking start")
 	mp := &MatchPlayer{Player: player, ReplyChannel: replyChannel, ReplyMutex: replyMutex}
 	gm.MatchingMutex.Lock()
-	fmt.Println("Matchmaking got lock")
 	bestMatching := godsPq.NewWith(MatchingMatchesComparator)
 
 	for i := 0; i < len(gm.WaitingMatches); i++ {
 		if gm.WaitingMatches[i].Capacity == mrp.MatchPlayerCount && len(gm.WaitingMatches[i].Players) < gm.WaitingMatches[i].Capacity {
-			var matchDegree float32 = 0
+			var matchDegree float32 = 1
 			for j := 0; j < len(gm.WaitingMatches[i].Players); j++ {
 				if slices.Contains(mrp.MatchPairingPreferences, gm.WaitingMatches[i].Players[j].Player.Username) {
 					matchDegree += 1
 				}
 			}
-			matchDegree /= float32(len(mrp.MatchPairingPreferences))
+			matchDegree /= float32(len(mrp.MatchPairingPreferences) + 1)
 			bestMatching.Enqueue(NewMatchingMatches(matchDegree, gm.WaitingMatches[i]))
+
 		}
 	}
 
