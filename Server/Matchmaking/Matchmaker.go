@@ -4,21 +4,47 @@ import (
 	"Server/Communication"
 	"Server/Database"
 	"fmt"
+	godsPq "github.com/emirpasic/gods/queues/priorityqueue"
 	"slices"
 	"sync"
 )
 
 type MatchRequestParams struct {
 	MatchPlayerCount        int
-	MatchPairingPreferences []string
+	MatchPairingPreferences []string //todo
+}
+
+type MatchingMatches struct {
+	matchScale float32
+	match      *Match
+}
+
+func NewMatchingMatches(matchScale float32, match *Match) *MatchingMatches {
+	return &MatchingMatches{match: match, matchScale: matchScale}
+}
+
+func MatchingMatchesComparator(a interface{}, b interface{}) int {
+	aObj := a.(MatchingMatches)
+	bObj := b.(MatchingMatches)
+	if aObj.matchScale >= bObj.matchScale {
+		return 1
+	} else {
+		return -1
+	}
 }
 
 func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan Communication.Reply, replyMutex *sync.Mutex, mrp MatchRequestParams) {
+	defer func() {
+		if r := recover(); r != nil {
+			return
+		}
+	}()
+
 	fmt.Println("Matchmaking start")
 	mp := &MatchPlayer{Player: player, ReplyChannel: replyChannel, ReplyMutex: replyMutex}
 	gm.MatchingMutex.Lock()
-	success := false
-	successInd := -1
+	bestMatching := godsPq.NewWith(MatchingMatchesComparator)
+
 	for i := 0; i < len(gm.WaitingMatches); i++ {
 		if gm.WaitingMatches[i].Capacity == mrp.MatchPlayerCount && len(gm.WaitingMatches[i].Players) < gm.WaitingMatches[i].Capacity {
 			var matchDegree float32 = 0
@@ -28,16 +54,13 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan C
 				}
 			}
 			matchDegree /= float32(len(mrp.MatchPairingPreferences))
-			if matchDegree > 0.75 {
-				success = true
-				successInd = i
-				break
-			}
+			bestMatching.Enqueue(NewMatchingMatches(matchDegree, gm.WaitingMatches[i]))
 		}
 	}
-	if !success {
-		fmt.Println("Matchmaking didn't find a match, starts a new one")
-		arr := make([]*MatchPlayer, 0, 20)
+
+	if bestMatching.Empty() {
+		fmt.Println("Matchmaker didn't find a match, starts a new one")
+		arr := make([]*MatchPlayer, 0, 20) //todo max player count
 		arr = append(arr, mp)
 		nm := &Match{mrp.MatchPlayerCount, arr}
 		gm.WaitingMatches = append(gm.WaitingMatches, nm)
@@ -47,10 +70,13 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan C
 		}
 		return
 	}
-	gm.WaitingMatches[successInd].Players = append(gm.WaitingMatches[successInd].Players, mp)
-	if len(gm.WaitingMatches[successInd].Players) == gm.WaitingMatches[successInd].Capacity {
+	rawBestFit, _ := bestMatching.Dequeue()
+	bestFit := rawBestFit.(MatchingMatches).match
+	fmt.Println("Match found, added to a waiting match")
+	bestFit.Players = append(bestFit.Players, mp)
+	if len(bestFit.Players) == bestFit.Capacity {
 		gm.MatchingMutex.Unlock()
-		go gm.RunGameServer(gm.WaitingMatches[successInd])
+		go gm.RunGameServer(bestFit)
 	} else {
 		gm.MatchingMutex.Unlock()
 		return

@@ -91,8 +91,10 @@ func (s *Session) Writer(wg *sync.WaitGroup) {
 			continue
 		}
 		handler(s, command)
-		s.OperationComplete.L.Lock()
-		s.OperationComplete.Signal()
-		s.OperationComplete.L.Unlock()
+		if command.Name != "start" {
+			s.OperationComplete.L.Lock()
+			s.OperationComplete.Signal()
+			s.OperationComplete.L.Unlock()
+		}
 	}
 }

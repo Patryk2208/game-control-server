@@ -11,7 +11,7 @@ func (s *Session) Start() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		s.DisplayPrompt()
-		input, err := reader.ReadString('\n')
+		input, err := reader.ReadString('\n') //todo
 		if err != nil {
 			continue
 		}

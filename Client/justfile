@@ -11,19 +11,27 @@ go-builds: build-go-for-linux-64 build-go-for-win-64 build-go-for-mac-64
 
 
 build-game-for-linux-64:
-  dotnet publish ../GameInstance/Client -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true -p:TrimMode=link -o ./bin/linux-64/
+  dotnet publish ../GameInstance/Client -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -o ./bin/linux-64/
 
 build-game-for-win-64:
-  dotnet publish ../GameInstance/Client -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true -p:TrimMode=link -o ./bin/win-64/
+  dotnet publish ../GameInstance/Client -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./bin/win-64/
 
 build-game-for-mac-64:
-  dotnet publish ../GameInstance/Client -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=true -p:TrimMode=link -o ./bin/mac-64/
+  dotnet publish ../GameInstance/Client -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -o ./bin/mac-64/
 
 game-builds: build-game-for-linux-64 build-game-for-win-64 build-game-for-mac-64
 
-#todo compress
+#tar --zstd -cvf ./bin/coodg-linux-64.tar.zst ./bin/linux-64/
+compress-linux-64:
+  7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on ./bin/coodg-linux-64.7z ./bin/linux-64/
+compress-win-64:
+  7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on ./bin/coodg-win-64.7z ./bin/win-64/
+compress-mac-64:
+  7z a -t7z -m0=lzma2 -mx=9 -mfb=64 -md=64m -ms=on ./bin/coodg-mac-64.7z ./bin/mac-64/
+
+compress-all: compress-linux-64 compress-win-64 compress-mac-64
 
 clean:
   #todo
 
-all: game-builds go-builds
+all: game-builds go-builds compress-all
