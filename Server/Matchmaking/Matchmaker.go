@@ -43,6 +43,7 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan C
 	fmt.Println("Matchmaking start")
 	mp := &MatchPlayer{Player: player, ReplyChannel: replyChannel, ReplyMutex: replyMutex}
 	gm.MatchingMutex.Lock()
+	fmt.Println("Matchmaking got lock")
 	bestMatching := godsPq.NewWith(MatchingMatchesComparator)
 
 	for i := 0; i < len(gm.WaitingMatches); i++ {
@@ -67,6 +68,8 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan C
 		gm.MatchingMutex.Unlock()
 		if nm.Capacity == len(nm.Players) {
 			go gm.RunGameServer(nm)
+		} else {
+			fmt.Println("Not starting yet")
 		}
 		return
 	}
