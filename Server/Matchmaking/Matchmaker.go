@@ -55,7 +55,7 @@ func (gm *GameManager) AddPlayer(player *Database.PlayerDB, replyChannel *chan C
 			}
 			matchDegree /= float32(len(mrp.MatchPairingPreferences) + 1)
 			bestMatching.Enqueue(NewMatchingMatches(matchDegree, gm.WaitingMatches[i]))
-
+			fmt.Println("Found Match with degree: ", matchDegree)
 		}
 	}
 
